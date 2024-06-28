@@ -1,0 +1,17 @@
+[Defines]
+  INF_VERSION     = 0x00010006
+  BASE_NAME      = Hello
+  FILE_GUID      = 3CDD63E4-5419-4C54-9007-586CF6523166
+  MODULE_TYPE    = UEFI_APPLICATION
+  VERSION_STRING = 0.1
+  ENTRY_POINT    = UefiMain
+
+[Sources]
+  Hello.c
+
+[Packages]
+  MdePkg/MdePkg.dec
+
+[LibraryClasses]
+  UefiLib
+  UefiApplicationEntryPoint
