@@ -1,2 +1,5 @@
 *.o
-
+*.fd
+*.efi
+*.elf
+ovmf
