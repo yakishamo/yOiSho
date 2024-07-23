@@ -2,6 +2,7 @@
 #define UEFI_SYSTEM_TABLE
 
 #include "uefi_base_types.h"
+#include "uefi_bootservices.h"
 
 // EFI_TABLE_HEADER
 typedef struct {
