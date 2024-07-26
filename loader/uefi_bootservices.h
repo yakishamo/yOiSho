@@ -42,6 +42,18 @@ typedef EFI_STATUS (EFIAPI *EFI_FREE_POOL) (
 	IN VOID *Buffer
 	);
 
+typedef EFI_STATUS (EFIAPI *EFI_EXIT) (
+		IN EFI_HANDLE ImageHandle,
+		IN EFI_STATUS ExitStatus,
+		IN UINTN      ExitDataSize,
+		IN CHAR16    *ExitData OPTIONAL
+		);
+
+typedef EFI_STATUS (EFIAPI *EFI_EXIT_BOOT_SERVICES) (
+		IN EFI_HANDLE ImageHandle,
+		IN UINTN      MapKey
+		);
+
 typedef EFI_STATUS (EFIAPI *EFI_OPEN_PROTOCOL) (
 		IN EFI_HANDLE Handle,
 		IN EFI_GUID  *Protocol,
@@ -58,6 +70,44 @@ typedef EFI_STATUS (EFIAPI *EFI_OPEN_PROTOCOL) (
 #define EFI_OPEN_PROTOCOL_BY_DRIVER           0x00000010
 #define EFI_OPEN_PROTOCOL_EXCLUSIVE           0x00000020
 
+typedef EFI_STATUS (EFIAPI *EFI_CLOSE_PROTOCOL) (
+		IN EFI_HANDLE Handle,
+		IN EFI_GUID  *Protocol,
+		IN EFI_HANDLE AgentHandle,
+		IN EFI_HANDLE ControllerHandle
+		);
+
+typedef VOID (EFIAPI *EFI_COPY_MEM) (
+		IN VOID *Destination,
+		IN VOID *Source,
+		IN UINTN Length
+		);
+
+typedef VOID (EFIAPI *EFI_SET_MEM) (
+		IN VOID *Buffer,
+		IN UINTN Size,
+		IN UINT8 Value
+		);
+
 typedef struct {
+	EFI_TABLE_HEADER       Hdr;
+	UINTN                  buf1[2];
+	EFI_ALLOCATE_PAGES     AllocatePages;
+	EFI_FREE_PAGES         FreePages;
+	EFI_GET_MEMORY_MAP     GetMemoryMap;
+	EFI_ALLOCATE_POOL      AllocatePool;
+	EFI_FREE_POOL          FreePool;
+	UINTN                  buf2[17];
+	EFI_EXIT               Exit;
+	UINTN                  buf3[1];
+	EFI_EXIT_BOOT_SERVICES ExitBootServices;
+	UINTN                  buf4[5];
+	EFI_OPEN_PROTOCOL      OpenProtocol;
+	EFI_CLOSE_PROTOCOL     CloseProtocol;
+	UINTN                  buf5[7];
+	EFI_COPY_MEM           CopyMem;
+	EFI_SET_MEM            SetMem;
+	UINTN                  buf6[1];
+} __attribute__((packed)) EFI_BOOT_SERVICES;
 
 #endif /* UEFI_BOOTSERVICES */

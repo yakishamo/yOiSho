@@ -4,15 +4,6 @@
 #include "uefi_base_types.h"
 #include "uefi_bootservices.h"
 
-// EFI_TABLE_HEADER
-typedef struct {
-	UINT64 Signature;
-	UINT32 Revision;
-	UINT32 HeaderSize;
-	UINT32 CRC32;
-	UINT32 Reserved;
-} EFI_TABLE_HEADER;
-
 // EFI_SIMPLE_TEXT_INPUT_PROTOCOL
 typedef struct EFI_SIMPLE_TEXT_INPUT_PROTOCOL EFI_SIMPLE_TEXT_INPUT_PROTOCOL;
 
@@ -116,12 +107,6 @@ typedef struct {
 	EFI_TABLE_HEADER Hdr;
 	UINT8            buf[sizeof(UINTN)*14];
 }EFI_RUNTIME_SERVICES; 
-
-// EFI_BOOT_SERVICES
-typedef struct {
-	EFI_TABLE_HEADER Hdr;
-	UINT8            buf[sizeof(UINTN)*44];
-}EFI_BOOT_SERVICES ;
 
 typedef struct {
 	EFI_GUID VendorGuid;
