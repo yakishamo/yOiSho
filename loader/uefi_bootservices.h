@@ -5,7 +5,7 @@
 #include "uefi_memory.h"
 #include "uefi_memory_map.h"
 
-typedef enum {
+typedef enum _EFI_ALLOCATE_TYPE {
 	AllocateAnyPages,
 	AllocateMaxAddress,
 	AllocateAddres,

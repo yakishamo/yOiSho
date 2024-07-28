@@ -2,6 +2,7 @@
 #include "uefi_loaded_image_protocol.h"
 #include "uefi_simple_file_system_protocol.h"
 #include "uefi_file_protocol.h"
+#include "elf.h"
 
 EFI_BOOT_SERVICES *gBS;
 EFI_SYSTEM_TABLE *gST;
@@ -15,6 +16,37 @@ VOID Print(CHAR16 *str) {
 	return;
 }
 
+UINTN pow(UINTN a, UINTN b) {
+	UINTN ret = 1;
+	for(UINTN i = 0; i < b; i++) {
+		ret *= a;
+	}
+	return ret;
+}
+
+VOID Print_int(UINTN a, unsigned int radix) {
+	CHAR16 str[25];
+	CHAR16 *p = str;
+	unsigned int v = a;
+	int n = 1;
+	while(v >= radix) {
+		v/=radix;
+		n++;
+	}
+	p = str + n;
+	v = a;
+	*p = 0;
+	do {
+		p--;
+		*p = v % radix + (CHAR16)'0';
+		if(*p > (CHAR16)'9') {
+			*p = v % radix - 10 + 'A';
+		}
+		v /= radix;
+	} while(p != str);
+	Print(str);
+}
+
 EFI_STATUS EFIAPI efi_main(void *image_handle __attribute((unused)),
 	EFI_SYSTEM_TABLE *system_table)
 {
@@ -24,7 +56,7 @@ EFI_STATUS EFIAPI efi_main(void *image_handle __attribute((unused)),
 
 	gST->ConOut->ClearScreen(gST->ConOut);
 	gST->ConOut->OutputString(gST->ConOut,
-			L"Hello UEFI!\r\n");
+			L"Hello, UEFI!\r\n");
 
 	// open loaded image protocol
 	EFI_GUID loaded_image_guid = EFI_LOADED_IMAGE_PROTOCOL_GUID;
@@ -92,12 +124,58 @@ EFI_STATUS EFIAPI efi_main(void *image_handle __attribute((unused)),
 		Print(L"failed to get kernel info\r\n");
 		hlt();
 	}
-	Print(kernel_info->FileName);
 
-	// load kernel to temp memory
-	UINT64 kernel_file_size = kernel_info->FileSize;
+	// allocate tmp buffer for kernel
+	UINTN kernel_file_size = (UINTN)kernel_info->FileSize;
+	CHAR8 *kernel_tmp_buf;
+	status = gBS->AllocatePool(
+			EfiLoaderData,
+			kernel_file_size,
+			(VOID**)&kernel_tmp_buf
+			);
+	if(status != EFI_SUCCESS) {
+		Print(L"failed to allocate pool for kernel_tmp_buf\r\n");
+		hlt();
+	}
+	Print(L"allocate pool for kernel_tmp_buf\r\n");
+
+	// read kernel
+	status = kernel_file->Read(
+			kernel_file,
+			&kernel_file_size,
+			kernel_tmp_buf
+			);
+	if(status != EFI_SUCCESS) {
+		Print(L"failed to read kernel.elf\r\n");
+		hlt();
+	}
+	Print(L"read kernel.elf\r\n");
+	if(kernel_tmp_buf[0] != 0x7f ||
+			kernel_tmp_buf[1] != 'E' || 
+			kernel_tmp_buf[2] != 'L' ||
+			kernel_tmp_buf[3] != 'F') {
+		Print(L"read kernel is not elf format.\r\n");
+		hlt();
+	}
+	Print(L"this is elf format\r\n");
+
+	/*
+	// allocate kernel buffer
+	status = gBS->AllocatePages(
+			EfiLoaderData,
+	*/
+
+	// read kernel elf header
+	Elf64_Ehdr *ehdr = (Elf64_Ehdr*)kernel_tmp_buf;
+	typedef void (*kernel_ent_t)(void);
+	kernel_ent_t kernel_ent;
+	kernel_ent = (kernel_ent_t)((UINTN)ehdr->e_entry + (UINTN)kernel_tmp_buf - 0x100000);
+
+	Print(L"0x");
+	Print_int((UINTN)kernel_ent, 16);
+
+	kernel_ent();
 
 	hlt();
 	return EFI_SUCCESS;
 }
-
