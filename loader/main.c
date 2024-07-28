@@ -167,14 +167,7 @@ EFI_STATUS EFIAPI efi_main(void *image_handle __attribute((unused)),
 
 	// read kernel elf header
 	Elf64_Ehdr *ehdr = (Elf64_Ehdr*)kernel_tmp_buf;
-	typedef void (*kernel_ent_t)(void);
-	kernel_ent_t kernel_ent;
-	kernel_ent = (kernel_ent_t)((UINTN)ehdr->e_entry + (UINTN)kernel_tmp_buf - 0x100000);
 
-	Print(L"0x");
-	Print_int((UINTN)kernel_ent, 16);
-
-	kernel_ent();
 
 	hlt();
 	return EFI_SUCCESS;
