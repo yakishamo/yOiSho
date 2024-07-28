@@ -162,12 +162,25 @@ EFI_STATUS EFIAPI efi_main(void *image_handle __attribute((unused)),
 	/*
 	// allocate kernel buffer
 	status = gBS->AllocatePages(
+			AllocateAddress,
 			EfiLoaderData,
-	*/
+			*/
 
 	// read kernel elf header
 	Elf64_Ehdr *ehdr = (Elf64_Ehdr*)kernel_tmp_buf;
+	Elf64_Half ph_ent_size = ehdr->e_phentsize;
+	Elf64_Half ph_num = ehdr->e_phnum;
+	UINTN kernel_start_addr = 0xffffffffffff;
+	UINTN kernel_end_addr = 0x0;
 
+	for(int i = 0; i < ph_num; i++) {
+		Elf64_Phdr *phdr = (Elf64_Phdr*)((UINTN)kernel_tmp_buf + ehdr->e_phoff + i*ph_ent_size);
+		if(phdr->p_type == PT_LOAD) {
+			if(phdr->p_vaddr < kernel_start_addr) 
+				kernel_start_addr = (UINTN)phdr->p_vaddr;
+			if(kernel_end_addr < (phdr->p_vaddr + phdr->p_memsz))
+				kernel_end_addr = phdr->p_vaddr + phdr->p_memsz;
+		}
 
 	hlt();
 	return EFI_SUCCESS;
