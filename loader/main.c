@@ -3,6 +3,7 @@
 #include "uefi_simple_file_system_protocol.h"
 #include "uefi_file_protocol.h"
 #include "elf.h"
+#include "memory_map.h"
 
 EFI_BOOT_SERVICES *gBS;
 EFI_SYSTEM_TABLE *gST;
@@ -162,19 +163,107 @@ EFI_STATUS EFIAPI efi_main(void *image_handle __attribute((unused)),
 	/*
 	// allocate kernel buffer
 	status = gBS->AllocatePages(
+			AllocateAddress,
 			EfiLoaderData,
-	*/
+			*/
 
 	// read kernel elf header
 	Elf64_Ehdr *ehdr = (Elf64_Ehdr*)kernel_tmp_buf;
-	typedef void (*kernel_ent_t)(void);
-	kernel_ent_t kernel_ent;
-	kernel_ent = (kernel_ent_t)((UINTN)ehdr->e_entry + (UINTN)kernel_tmp_buf - 0x100000);
+	Elf64_Half ph_ent_size = ehdr->e_phentsize;
+	Elf64_Half ph_num = ehdr->e_phnum;
+	UINTN kernel_start_addr = 0xffffffffffff;
+	UINTN kernel_end_addr = 0x0;
 
-	Print(L"0x");
-	Print_int((UINTN)kernel_ent, 16);
+	// calc kernel mem size
+	for(int i = 0; i < ph_num; i++) {
+		Elf64_Phdr *phdr = (Elf64_Phdr*)((UINTN)kernel_tmp_buf + ehdr->e_phoff + i*ph_ent_size);
+		if(phdr->p_type != PT_LOAD)
+			continue;
+	
+		if(phdr->p_vaddr < kernel_start_addr) 
+			kernel_start_addr = (UINTN)phdr->p_vaddr;
+		if(kernel_end_addr < (phdr->p_vaddr + phdr->p_memsz))
+			kernel_end_addr = phdr->p_vaddr + phdr->p_memsz;
+	}
+	UINTN page_num = (kernel_end_addr - kernel_start_addr) / 0x1000 + 1;
+	status = gBS->AllocatePages(
+			AllocateAddress,
+			EfiLoaderData,
+			page_num,
+			&kernel_start_addr
+			);
+	if(status != EFI_SUCCESS) {
+		Print(L"failed to allocate kernel buffer\r\n");
+		Print(L"kernel_start_addr : 0x");
+		Print_int(kernel_start_addr, 16);
+		Print(L"\r\n");
+		hlt();
+	}
+	Print(L"allocate kernel buffer successfully\r\n");
+	Print(L"kernel_start_addr : 0x");
+	Print_int(kernel_start_addr, 16);
+	Print(L"\r\nkernel_end_addr : 0x");
+	Print_int(kernel_end_addr, 16);
+	Print(L"\r\n");
 
-	kernel_ent();
+	// copy kernel
+	gBS->SetMem(
+			(VOID*)kernel_start_addr,
+			kernel_end_addr - kernel_start_addr + 1,
+			0
+			);
+	for(int i = 0; i < ph_num; i++) {
+		Elf64_Phdr *phdr = (Elf64_Phdr*)((UINTN)kernel_tmp_buf + ehdr->e_phoff+i*ph_ent_size);
+		if(phdr->p_type != PT_LOAD)
+			continue;
+		gBS->CopyMem(
+				(VOID*)phdr->p_vaddr,
+				(VOID*)((UINTN)kernel_tmp_buf + phdr->p_offset),
+				phdr->p_filesz
+				);
+		Print(L"\r\ncopy\r\ndst : 0x");
+		Print_int((UINTN)phdr->p_vaddr, 16);
+		Print(L"\r\nsrc : 0x");
+		Print_int((UINTN)kernel_tmp_buf + phdr->p_offset, 16);
+		Print(L"\r\nlen : 0x");
+		Print_int((UINTN)phdr->p_filesz, 16);
+		Print(L"\r\n");
+	}
+
+	// exit bootservice
+	MemoryMap mmap = {NULL,0,0,4096*4,0};
+	status = gBS->AllocatePool(
+			EfiLoaderData,
+			mmap.map_size,
+			(VOID**)&mmap.desc
+			);
+	if(status != EFI_SUCCESS) {
+		Print(L"failed to allocate pool for memory map\r\n");
+		hlt();
+	}
+
+	status = gBS->GetMemoryMap(
+			&mmap.map_size,
+			mmap.desc,
+			&mmap.map_key,
+			&mmap.desc_size,
+			&mmap.desc_ver
+			);
+	if(status != EFI_SUCCESS) {
+		Print(L"failed to get memory map\r\nstatus = 0x");
+		Print_int((UINTN)status,16);
+		hlt();
+	}
+
+	status = gBS->ExitBootServices(image_handle, mmap.map_key);
+	if(status != EFI_SUCCESS) {
+		Print(L"faield to exit bootservices\r\n");
+		hlt();
+	}
+
+	typedef void (*kernel_main_t) (void);
+	kernel_main_t kernel_main = (kernel_main_t)ehdr->e_entry;
+	kernel_main();
 
 	hlt();
 	return EFI_SUCCESS;
