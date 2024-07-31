@@ -37,6 +37,9 @@ typedef UINTN  EFI_TPL;
 typedef UINT32 EFI_MAC_ADDRESS;
 typedef UINT64 EFI_IPv4_ADDRESS;
 
+typedef UINT64 EFI_PHYSICAL_ADDRESS;
+typedef UINT64 EFI_VIRTUAL_ADDRESS;
+
 typedef struct {
 	UINT16 Year;
 	UINT8  Month;

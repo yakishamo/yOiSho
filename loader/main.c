@@ -2,6 +2,7 @@
 #include "uefi_loaded_image_protocol.h"
 #include "uefi_simple_file_system_protocol.h"
 #include "uefi_file_protocol.h"
+#include "uefi_graphics_output_protocol.h"
 #include "elf.h"
 #include "memory_map.h"
 
