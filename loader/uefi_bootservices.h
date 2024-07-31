@@ -8,7 +8,7 @@
 typedef enum _EFI_ALLOCATE_TYPE {
 	AllocateAnyPages,
 	AllocateMaxAddress,
-	AllocateAddres,
+	AllocateAddress,
 	MaxAllocateType
 } EFI_ALLOCATE_TYPE;
 
