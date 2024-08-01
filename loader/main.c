@@ -231,6 +231,55 @@ EFI_STATUS EFIAPI efi_main(void *image_handle __attribute((unused)),
 		Print(L"\r\n");
 	}
 
+	// open graphic_output_protocol
+	/*
+	EFI_GUID gop_guid = EFI_GRAPHICS_OUTPUT_PROTOCOL_GUID;
+	EFI_GRAPHICS_OUTPUT_PROTOCOL *gop = NULL;
+	UINTN num_gop_handles = 0;
+	EFI_HANDLE *gop_handles = NULL;
+	status = gBS->LocateHandleBuffer(
+			ByProtocol,
+			&gop_guid,
+			NULL,
+			&num_gop_handles,
+			&gop_handles);
+	if(status != EFI_SUCCESS) {
+		Print(L"LocateHandleBuffer() failed.\r\n");
+		hlt();
+	}
+	for(UINTN i = 0; i < num_gop_handles; i++) {
+		status = gBS->OpenProtocol(
+				gop_handles[i],
+				&gop_guid,
+				(VOID**)gop,
+				image_handle,
+				NULL,
+				EFI_OPEN_PROTOCOL_BY_HANDLE_PROTOCOL);
+		if(status != EFI_SUCCESS) {
+			Print(L"failed to open gop\r\nindex: ");
+			Print_int(i, 10);
+			Print(L"\r\nstatus: 0x");
+			Print_int(status, 16);
+			Print(L"\r\n");
+		} else {
+			Print(L"open gop successfully\r\n");
+			break;
+		}
+	}
+	if(status != EFI_SUCCESS) hlt();
+	*/
+	EFI_GUID gop_guid = EFI_GRAPHICS_OUTPUT_PROTOCOL_GUID;
+	EFI_GRAPHICS_OUTPUT_PROTOCOL *gop = NULL;
+	status = gBS->LocateProtocol(
+			&gop_guid,
+			NULL,
+			(VOID**)&gop	
+			);
+	if(status != EFI_SUCCESS) {
+		Print(L"Locate gop failed.\r\n");
+		hlt();
+	}
+
 	// exit bootservice
 	MemoryMap mmap = {NULL,0,0,4096*4,0};
 	status = gBS->AllocatePool(
