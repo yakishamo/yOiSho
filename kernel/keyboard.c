@@ -7,6 +7,7 @@ void InitializeKeycode () {
 	for(int i = 54; i < 0x100; i++) {
 		keycode[i] = '\0';
 	}
+	keycode[14] = '\b';
 	keycode[43] = ']';
 	keycode[28] = '\n';
 	keycode[57] = ' ';

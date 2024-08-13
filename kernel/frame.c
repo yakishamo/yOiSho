@@ -38,6 +38,14 @@ void WriteString(char *str, unsigned int x, unsigned int y, Color *c) {
 	}
 }
 
+void WriteSquare(unsigned int x1, unsigned int y1, unsigned x2, unsigned y2, Color *c) {
+	for(int j = y1; j <= y2; j++) {
+		for(int i = x1; i <= x2; i++) {
+			WritePixel(i,j,c);
+		}
+	}
+}
+
 void ClearScreen() {
 	for(unsigned int i = 0; i < frame_info->frame_size; i++) {
 		frame_info->frame_base[i] = 0;
