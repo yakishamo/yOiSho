@@ -58,6 +58,10 @@ __attribute__((ms_abi))
 int KernelMain(FrameInfo *fi){
 	frame_info = fi;
 
+	for(unsigned int i = 0; i < frame_info->frame_size; i++) {
+		frame_info->frame_base[i] = 0;
+	}
+
 	Color c = {255,0,0,0};
 	for(uint32_t i = 0; i < 500; i++) {
 		WritePixel(i,i,&c);
