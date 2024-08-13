@@ -6,6 +6,7 @@
 #include "asmfunc.h"
 
 extern FrameInfo *frame_info;
+extern char keycode[];
 
 void hlt() {
 	while(1) asm("hlt");
@@ -22,9 +23,11 @@ int KernelMain(FrameInfo *fi){
 	int i = 0;
 	while(1) {
 		if((IoIn8(0x64) & 0x01) == 1) {
-			WriteString("Keyboard.", 0, i*16, &c);
-			i++;
-			IoIn8(0x60);
+			char code = IoIn8(0x60);
+			if(code > 0) {
+				WriteAscii(keycode[code], i*8, 16, &c);
+				i++;
+			}
 		}
 	}
 

@@ -1,5 +1,5 @@
 TARGET = kernel.elf
-OBJS = main.o hankaku.o frame.o string.o asmfunc.o
+OBJS = main.o hankaku.o frame.o string.o asmfunc.o keyboard.o
 
 CXXFLAGS += -O0 -Wall -g --target=x86_64-elf -ffreestanding -mno-red-zone \
 						-fno-exceptions -fno-rtti
