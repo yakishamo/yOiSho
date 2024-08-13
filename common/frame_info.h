@@ -1,10 +1,6 @@
 #ifndef FRAME_INFO_H
 #define FRAME_INFO_H
 
-#ifdef __cplusplus
-extern "C" {
-#endif /* __cplusplus */
-
 typedef enum {
 	RGB,
 	BGR,
@@ -29,9 +25,5 @@ typedef struct {
 	unsigned int        vertical_resolution;
 	unsigned int        pixel_per_scanline;
 } FrameInfo;
-
-#ifdef __cplusplus
-}
-#endif /* __cplusplus */
 
 #endif /* FRAME_INFO_H */
