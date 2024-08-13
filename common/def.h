@@ -3,7 +3,7 @@
 
 #include "types64.h"
 
-typedef uint32_t size_t;
+typedef unsigned long size_t;
 
 #define offsetof(s,m) (size_t)&(((s*)0)->m)
 

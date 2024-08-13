@@ -1,7 +1,7 @@
 #ifndef UEFI_BOOTSERVICES
 #define UEFI_BOOTSERVICES
 
-#include "def.h"
+#include "../common/def.h"
 #include "uefi_base_types.h"
 #include "uefi_memory.h"
 #include "uefi_memory_map.h"

@@ -1,7 +1,7 @@
 #ifndef UEFI_BASE_TYPES_H
 #define UEFI_BASE_TYPES_H
 
-#include "types64.h"
+#include "../common/types64.h"
 
 typedef uint16_t  BOOLEAN;
 typedef intptr_t  INTN;

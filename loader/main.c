@@ -3,9 +3,9 @@
 #include "uefi_simple_file_system_protocol.h"
 #include "uefi_file_protocol.h"
 #include "uefi_graphics_output_protocol.h"
-#include "elf.h"
+#include "../common/elf.h"
+#include "../common/frame_info.h"
 #include "memory_map.h"
-#include "frame_info.h"
 
 EFI_BOOT_SERVICES *gBS;
 EFI_SYSTEM_TABLE *gST;
