@@ -1,6 +1,7 @@
 #ifndef UEFI_BOOTSERVICES
 #define UEFI_BOOTSERVICES
 
+#include "def.h"
 #include "uefi_base_types.h"
 #include "uefi_memory.h"
 #include "uefi_memory_map.h"
@@ -127,7 +128,7 @@ typedef struct {
 	UINTN                  buf5[2];
 	EFI_LOCATE_HANDLE_BUFFER LocateHandleBuffer;
 	EFI_LOCATE_PROTOCOL    LocateProtocol;
-	UINTN                  buf6[2];
+	UINTN                  buf6[3];
 	EFI_COPY_MEM           CopyMem;
 	EFI_SET_MEM            SetMem;
 	UINTN                  buf7[1];

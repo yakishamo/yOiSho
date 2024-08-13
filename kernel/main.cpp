@@ -3,6 +3,8 @@ void hlt() {
 }
 
 extern "C"
+// __attribute__((ms_abi))
 int KernelMain(){
 	hlt();
+	return 0;
 }

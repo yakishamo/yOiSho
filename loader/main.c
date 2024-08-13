@@ -5,6 +5,7 @@
 #include "uefi_graphics_output_protocol.h"
 #include "elf.h"
 #include "memory_map.h"
+#include "frame_info.h"
 
 EFI_BOOT_SERVICES *gBS;
 EFI_SYSTEM_TABLE *gST;
@@ -161,13 +162,6 @@ EFI_STATUS EFIAPI efi_main(void *image_handle __attribute((unused)),
 	}
 	Print(L"this is elf format\r\n");
 
-	/*
-	// allocate kernel buffer
-	status = gBS->AllocatePages(
-			AllocateAddress,
-			EfiLoaderData,
-			*/
-
 	// read kernel elf header
 	Elf64_Ehdr *ehdr = (Elf64_Ehdr*)kernel_tmp_buf;
 	Elf64_Half ph_ent_size = ehdr->e_phentsize;
@@ -175,7 +169,7 @@ EFI_STATUS EFIAPI efi_main(void *image_handle __attribute((unused)),
 	UINTN kernel_start_addr = 0xffffffffffff;
 	UINTN kernel_end_addr = 0x0;
 
-	// calc kernel mem size
+	// calc kernel mem size and allocate kernel code memory
 	for(int i = 0; i < ph_num; i++) {
 		Elf64_Phdr *phdr = (Elf64_Phdr*)((UINTN)kernel_tmp_buf + ehdr->e_phoff + i*ph_ent_size);
 		if(phdr->p_type != PT_LOAD)
@@ -231,54 +225,45 @@ EFI_STATUS EFIAPI efi_main(void *image_handle __attribute((unused)),
 		Print(L"\r\n");
 	}
 
-	// open graphic_output_protocol
-	/*
-	EFI_GUID gop_guid = EFI_GRAPHICS_OUTPUT_PROTOCOL_GUID;
-	EFI_GRAPHICS_OUTPUT_PROTOCOL *gop = NULL;
-	UINTN num_gop_handles = 0;
-	EFI_HANDLE *gop_handles = NULL;
-	status = gBS->LocateHandleBuffer(
-			ByProtocol,
-			&gop_guid,
-			NULL,
-			&num_gop_handles,
-			&gop_handles);
-	if(status != EFI_SUCCESS) {
-		Print(L"LocateHandleBuffer() failed.\r\n");
-		hlt();
-	}
-	for(UINTN i = 0; i < num_gop_handles; i++) {
-		status = gBS->OpenProtocol(
-				gop_handles[i],
-				&gop_guid,
-				(VOID**)gop,
-				image_handle,
-				NULL,
-				EFI_OPEN_PROTOCOL_BY_HANDLE_PROTOCOL);
-		if(status != EFI_SUCCESS) {
-			Print(L"failed to open gop\r\nindex: ");
-			Print_int(i, 10);
-			Print(L"\r\nstatus: 0x");
-			Print_int(status, 16);
-			Print(L"\r\n");
-		} else {
-			Print(L"open gop successfully\r\n");
-			break;
-		}
-	}
-	if(status != EFI_SUCCESS) hlt();
-	*/
 	EFI_GUID gop_guid = EFI_GRAPHICS_OUTPUT_PROTOCOL_GUID;
 	EFI_GRAPHICS_OUTPUT_PROTOCOL *gop = NULL;
 	status = gBS->LocateProtocol(
 			&gop_guid,
 			NULL,
-			(VOID**)&gop	
+			(VOID**)&gop
 			);
 	if(status != EFI_SUCCESS) {
 		Print(L"Locate gop failed.\r\n");
 		hlt();
 	}
+
+	/*
+	// prepare frame info
+	FrameInfo *fi;
+	status = gBS->AllocatePool(
+			EfiLoaderData,
+			sizeof(FrameInfo),
+			(VOID**)&fi
+			);
+	if(status != EFI_SUCCESS) {
+		Print(L"failed to allocate pool for frame info\r\n");
+		hlt();
+	}
+	fi->frame_base = (unsigned char *)gop->Mode->FrameBufferBase;
+	fi->frame_size = gop->Mode->FrameBufferSize;
+	fi->format = (PixelFormat)gop->Mode->Info->PixelFormat;
+	fi->mask.red = gop->Mode->Info->PixelInformation.RedMask;
+	fi->mask.green = gop->Mode->Info->PixelInformation.GreenMask;
+	fi->mask.blue = gop->Mode->Info->PixelInformation.BlueMask;
+	fi->mask.reserved = gop->Mode->Info->PixelInformation.ReservedMask;
+	fi->horizontal_resolution = gop->Mode->Info->HorizontalResolution;
+	fi->vertical_resolution = gop->Mode->Info->VerticalResolution;
+	fi->pixel_per_scanline = gop->Mode->Info->PixelsPerScanLine;
+
+	Print(L"kernel_entry : 0x");
+	Print_int((UINTN)ehdr->e_entry,16);
+	Print(L"\r\n");
+	*/
 
 	// exit bootservice
 	MemoryMap mmap = {NULL,0,0,4096*4,0};
