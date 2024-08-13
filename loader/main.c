@@ -237,7 +237,6 @@ EFI_STATUS EFIAPI efi_main(void *image_handle __attribute((unused)),
 		hlt();
 	}
 
-	/*
 	// prepare frame info
 	FrameInfo *fi;
 	status = gBS->AllocatePool(
@@ -263,7 +262,6 @@ EFI_STATUS EFIAPI efi_main(void *image_handle __attribute((unused)),
 	Print(L"kernel_entry : 0x");
 	Print_int((UINTN)ehdr->e_entry,16);
 	Print(L"\r\n");
-	*/
 
 	// exit bootservice
 	MemoryMap mmap = {NULL,0,0,4096*4,0};
@@ -296,9 +294,9 @@ EFI_STATUS EFIAPI efi_main(void *image_handle __attribute((unused)),
 		hlt();
 	}
 
-	typedef void (*kernel_main_t) (void);
+	typedef void (*kernel_main_t) (FrameInfo *frame_info);
 	kernel_main_t kernel_main = (kernel_main_t)ehdr->e_entry;
-	kernel_main();
+	kernel_main(fi);
 
 	hlt();
 	return EFI_SUCCESS;
