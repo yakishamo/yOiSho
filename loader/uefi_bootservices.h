@@ -1,6 +1,7 @@
 #ifndef UEFI_BOOTSERVICES
 #define UEFI_BOOTSERVICES
 
+#include "def.h"
 #include "uefi_base_types.h"
 #include "uefi_memory.h"
 #include "uefi_memory_map.h"
@@ -77,6 +78,26 @@ typedef EFI_STATUS (EFIAPI *EFI_CLOSE_PROTOCOL) (
 		IN EFI_HANDLE ControllerHandle
 		);
 
+typedef enum {
+	AllHandles,
+	ByRegisterNotify,
+	ByProtocol
+} EFI_LOCATE_SEARCH_TYPE;
+
+typedef EFI_STATUS (EFIAPI *EFI_LOCATE_HANDLE_BUFFER) (
+		IN EFI_LOCATE_SEARCH_TYPE SearchType,
+		IN EFI_GUID              *Protocol OPTIONAL,
+		IN VOID                  *SearchKey OPTIONAL,
+		OUT UINTN                *NoHandles,
+		OUT EFI_HANDLE          **Buffer
+		);
+
+typedef EFI_STATUS (EFIAPI *EFI_LOCATE_PROTOCOL) (
+		IN EFI_GUID *Protocol,
+		IN VOID     *Registration OPTIONAL,
+		OUT VOID   **Interface
+		);
+
 typedef VOID (EFIAPI *EFI_COPY_MEM) (
 		IN VOID *Destination,
 		IN VOID *Source,
@@ -104,10 +125,13 @@ typedef struct {
 	UINTN                  buf4[5];
 	EFI_OPEN_PROTOCOL      OpenProtocol;
 	EFI_CLOSE_PROTOCOL     CloseProtocol;
-	UINTN                  buf5[7];
+	UINTN                  buf5[2];
+	EFI_LOCATE_HANDLE_BUFFER LocateHandleBuffer;
+	EFI_LOCATE_PROTOCOL    LocateProtocol;
+	UINTN                  buf6[3];
 	EFI_COPY_MEM           CopyMem;
 	EFI_SET_MEM            SetMem;
-	UINTN                  buf6[1];
+	UINTN                  buf7[1];
 } __attribute__((packed)) EFI_BOOT_SERVICES;
 
 #endif /* UEFI_BOOTSERVICES */
