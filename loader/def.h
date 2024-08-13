@@ -1,6 +1,10 @@
 #ifndef DEF_H
 #define DEF_H
 
-#define offsetof2(s,m)	(s*)0
+#include "types64.h"
+
+typedef uint32_t size_t;
+
+#define offsetof(s,m) (size_t)&(((s*)0)->m)
 
 #endif /* DEF_H */

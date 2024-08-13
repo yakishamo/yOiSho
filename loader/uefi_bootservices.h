@@ -133,5 +133,6 @@ typedef struct {
 	EFI_SET_MEM            SetMem;
 	UINTN                  buf7[1];
 } __attribute__((packed)) EFI_BOOT_SERVICES;
+_Static_assert(offsetof(EFI_BOOT_SERVICES,CopyMem) == sizeof(EFI_TABLE_HEADER) + sizeof(void*) * 41);
 
 #endif /* UEFI_BOOTSERVICES */

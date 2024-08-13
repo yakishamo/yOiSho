@@ -5,7 +5,7 @@ all: $(TARGET)
 
 $(TARGET): main.c Makefile
 	x86_64-w64-mingw32-gcc -Wall -Wextra -e efi_main -nostdinc -nostdlib \
-         -fno-builtin -Wl,--subsystem,10 -o $@ $<
+         -Wno-pointer-to-int-cast -fno-builtin -Wl,--subsystem,10 -o $@ $<
 
 run:
 	cp ./BOOTX64.efi ./fs/EFI/BOOT/BOOTX64.efi
