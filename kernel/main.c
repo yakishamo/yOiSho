@@ -33,33 +33,61 @@ int KernelMain(FrameInfo *fi){
 	memset(line, '\0', 0x100);
 	int x = 0;
 	int y = 0;
+	WriteString("> ", x, y, &white);
+	x+=16;
+	CursorNext(cur);
+	CursorNext(cur);
 	while(1) {
 		if((IoIn8(0x64) & 0x01) == 1) {
 			int code = IoIn8(0x60);
 			char ich = keycode[code];
-			if(code < 0x80) {
+			if(code < 0x80 && ich != '\0') {
 				if(ich == '\b' && i > 0) {
 					i--;
 					CursorBack(cur);
-					WriteSquare(i*8, y, i*8+7, y+15, &black);
+					x-=8;
+					WriteSquare(x, y, x+7 , y+15, &black);
 					line[i] = '\0';
 				} else if(ich != '\b' && ich != '\n'){
-					WriteAscii(ich, i*8, y, &white);
+					WriteAscii(ich, x, y, &white);
+					x+=8;
 					CursorNext(cur);
 					line[i] = ich;
 					i++;
 				} else if(ich == '\n') {
 					EraseCursor(cur);
 					Scroll(20);
-					WriteSquare(0,y,i*8,y+16, &black);
+					WriteSquare(0,y,x+7,y+15, &black);
 					if(strncmp(line, "echo ", 5) == 0) {
 						WriteString(line+5, 0, 0, &white);
 						Scroll(20);
-						WriteSquare(0,y,i*8,y+16, &black);
+						WriteSquare(0,y,x+7,y+15, &black);
+					} else if(strncmp(line, "ls", 2) == 0) {
+						strcpy(line, FileList());
+						WriteString(line, 0, 0, &white);
+						Scroll(20);
+						WriteSquare(0,y,strlen(line)*8+7, y+15, &black);
+					} else if(strncmp(line, "touch ", 6) == 0) {
+						FILE *f = CreateFile(line+6, "", 0);
+						if(f == NULL) {
+							WriteString("failed to create file.", 0, y, &white);
+							Scroll(20);
+							WriteSquare(0,y,strlen("failed to create file.")*8+7, y+15, &black);
+						} else {
+							strcat(line, " created.");
+							WriteString(line+6, 0, y, &white);
+							Scroll(20);
+							WriteSquare(0,y,strlen(line)*8+7, y+15, &black);
+						}
 					}
 					MoveCursor(cur, 0, 0);
 					PrintCursor(cur);
 					i = 0;
+					x = 0;
+					WriteString("> ", x, y, &white);
+					x+=16;
+					CursorNext(cur);
+					CursorNext(cur);
 					memset(line, '\0', 0x100);
 				}
 			}
