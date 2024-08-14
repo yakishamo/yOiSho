@@ -51,6 +51,11 @@ int KernelMain(FrameInfo *fi){
 					EraseCursor(cur);
 					Scroll(20);
 					WriteSquare(0,y,i*8,y+16, &black);
+					if(strncmp(line, "echo ", 5) == 0) {
+						WriteString(line+5, 0, 0, &white);
+						Scroll(20);
+						WriteSquare(0,y,i*8,y+16, &black);
+					}
 					MoveCursor(cur, 0, 16);
 					PrintCursor(cur);
 					i = 0;
