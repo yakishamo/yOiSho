@@ -6,6 +6,7 @@
 #include "asmfunc.h"
 #include "keyboard.h"
 #include "file.h"
+#include "cursor.h"
 
 extern FrameInfo *frame_info;
 extern char keycode[];
@@ -24,6 +25,10 @@ int KernelMain(FrameInfo *fi){
 	Color black = {0,0,0,0};
 	WriteString("Hello yOiSho!!", 0, 0, &white);
 
+	CURSOR *cur;
+	cur = InitializeCursor(&white);
+	MoveCursor(cur, 0, 32);
+	PrintCursor(cur);
 	int i = 0;
 	char line[0x100];
 	memset(line, '\0', 0x100);
@@ -35,31 +40,19 @@ int KernelMain(FrameInfo *fi){
 			if(code < 0x80) {
 				if(ich == '\b' && i > 0) {
 					i--;
+					CursorBack(cur);
 					WriteSquare(i*8, y, i*8+7, y+16, &black);
 					line[i] = '\0';
 				} else if(ich != '\b' && ich != '\n'){
 					WriteAscii(ich, i*8, y, &white);
+					CursorNext(cur);
 					line[i] = ich;
 					i++;
 				} else if(ich == '\n') {
-					y += 16;
-					if(strncmp("echo ", line, 5) == 0) {
-						WriteString(line+5, 0, y, &white);
-						y+=16;
-					} else if(strncmp("ls", line, 3) == 0) {
-						WriteString(FileList(), 0, y, &white);
-						y+=16;
-					} else if(strncmp("touch ", line, 6) == 0) {
-						FILE *f = CreateFile(line+6, "", 0);
-						if(f == NULL) {
-							WriteString("failed to create file.", 0, y, &white);
-							y+=16;
-						} else {
-							strcat(line+6, " created.");
-							WriteString(line+6, 0, y, &white);
-							y+=16;
-						}
-					}
+					WriteSquare(0,y,i*8,y+16, &black);
+					EraseCursor(cur);
+					MoveCursor(cur, 0, 32);
+					PrintCursor(cur);
 					i = 0;
 					memset(line, '\0', 0x100);
 				}
