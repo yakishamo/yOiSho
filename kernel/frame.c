@@ -52,7 +52,3 @@ void ClearScreen() {
 	}
 }
 
-/*
-void Print(char *str) {
-	int len = strlen(str);
-*/

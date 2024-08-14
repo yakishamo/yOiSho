@@ -41,7 +41,7 @@ int KernelMain(FrameInfo *fi){
 				if(ich == '\b' && i > 0) {
 					i--;
 					CursorBack(cur);
-					WriteSquare(i*8, y, i*8+7, y+16, &black);
+					WriteSquare(i*8, y, i*8+7, y+15, &black);
 					line[i] = '\0';
 				} else if(ich != '\b' && ich != '\n'){
 					WriteAscii(ich, i*8, y, &white);
