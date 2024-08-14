@@ -26,11 +26,12 @@ int KernelMain(FrameInfo *fi){
 
 	CURSOR *cur;
 	cur = InitializeCursor(&white);
-	MoveCursor(cur, 0, 16);
+	MoveCursor(cur, 0, 0);
 	PrintCursor(cur);
 	int i = 0;
 	char line[0x100];
 	memset(line, '\0', 0x100);
+	int x = 0;
 	int y = 0;
 	while(1) {
 		if((IoIn8(0x64) & 0x01) == 1) {
@@ -56,7 +57,7 @@ int KernelMain(FrameInfo *fi){
 						Scroll(20);
 						WriteSquare(0,y,i*8,y+16, &black);
 					}
-					MoveCursor(cur, 0, 16);
+					MoveCursor(cur, 0, 0);
 					PrintCursor(cur);
 					i = 0;
 					memset(line, '\0', 0x100);
