@@ -15,4 +15,8 @@ typedef unsigned long long uint64_t;
 typedef int64_t  intptr_t;
 typedef uint64_t uintptr_t;
 
+typedef int bool;
+#define true 1;
+#define false 0;
+
 #endif /* TYPES_H */

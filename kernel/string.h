@@ -6,5 +6,10 @@
 
 int strlen(char *str);
 void *memset(void *s, int c, size_t n);
+int strcmp(const char *s1, const char *s2);
+int strncmp(const char *s1, const char *s2, size_t n);
+char *strncpy(char *s1, const char *s2, size_t n);
+char *strcpy(char *s1, const char *s2);
+char *strcat(char *s1, const char *s2);
 
 #endif /* STRING_H */
