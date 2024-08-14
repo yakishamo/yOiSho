@@ -52,3 +52,8 @@ void ClearScreen() {
 	}
 }
 
+void Scroll(unsigned int y) {
+	memmove(frame_info->frame_base + frame_info->pixel_per_scanline * 4 * y,
+			frame_info->frame_base,
+			frame_info->frame_size - frame_info->pixel_per_scanline * 4 * y);
+}

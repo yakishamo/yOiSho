@@ -14,6 +14,25 @@ void *memset(void* s, int c, size_t n) {
 	return s;
 }
 
+void *memmove(void *buf1, const void *buf2, size_t n) {
+	char *d = buf1;
+	const char *s = buf2;
+	if(d==s) return d;
+
+	if(d<s)
+		for(;n;n--) *d++ = *s++;
+	else 
+		while(n)n--, d[n]=s[n];
+	return buf1;
+}
+/*
+	for(int i = 0; i < n; i++) {
+		((char*)buf1)[i] = ((char*)buf2)[i];
+	}
+	return buf1;
+}
+*/
+
 int strcmp(const char *s1, const char *s2) {
 	const char *p1 = s1;
 	const char *p2 = s2;
