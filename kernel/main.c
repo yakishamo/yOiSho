@@ -8,6 +8,7 @@
 #include "file.h"
 #include "cursor.h"
 #include "parse.h"
+#include "editor.h"
 
 extern FrameInfo *frame_info;
 extern char keycode[];
@@ -111,6 +112,10 @@ int KernelMain(FrameInfo *fi){
 						const char *str = ReadFile(GetToken(tl, 1));
 						if(str == NULL) Print("ReadFile() failed.");
 						else Print(str);
+					} else if(strcmp(GetToken(tl, 0), "edit") == 0) {
+						editor(GetToken(tl, 1), 0, 0);
+						Scroll(20);
+						WriteSquare(0,0,frame_info->horizontal_resolution*4,15,&black);
 					}
 					MoveCursor(cur, 0, 0);
 					PrintCursor(cur);

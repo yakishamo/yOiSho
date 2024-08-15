@@ -1,6 +1,8 @@
 #ifndef CURSOR_H
 #define CURSOR_H
 
+#include "frame.h"
+
 typedef struct _CURSOR CURSOR;
 
 struct _CURSOR {
