@@ -3,7 +3,7 @@
 #include "../common/types64.h"
 #include "../common/def.h"
 
-int strlen(char *str) {
+int strlen(const char *str) {
 	int i = 0;
 	while(str[i] != '\0') i++;
 	return i;
@@ -36,12 +36,12 @@ void *memcpy(void *buf1, void *buf2, size_t n) {
 int strcmp(const char *s1, const char *s2) {
 	const char *p1 = s1;
 	const char *p2 = s2;
-	while(*p1 == '\0' || *p2 == '\0') {
+	while(*p1 == '\0' && *p2 == '\0') {
 		if(*p1 - *p2 != 0) return *p1 - *p2;
 		p1++;
 		p2++;
 	}
-	return *p1-*p2;
+	return p1[1] - p2[1];
 }
 
 int strncmp(const char *s1, const char *s2, size_t n) {

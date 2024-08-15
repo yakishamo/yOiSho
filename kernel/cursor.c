@@ -14,7 +14,7 @@ struct _CURSOR {
 
 CURSOR cursor;
 
-CURSOR *InitializeCursor(Color *c) {
+CURSOR *InitializeCursor(const Color *c) {
 	cursor.x = 0;
 	cursor.y = 0;
 	cursor.c.red = c->red;

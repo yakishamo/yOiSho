@@ -21,7 +21,7 @@ void WritePixel(unsigned int x, unsigned int y, const Color *c) {
 	frame_info->frame_base[(frame_info->pixel_per_scanline * y + x) * 4 + 3] = c->reserved;
 }
 
-void WriteAscii(char ch, unsigned int x, unsigned int y, const Color *c) {
+void WriteAscii(const char ch, unsigned int x, unsigned int y, const Color *c) {
 	unsigned char *font = getFont(ch);
 	for(int i = 0; i < 16; i++) {
 		for(int j = 0; j < 8; j++) {
@@ -32,13 +32,13 @@ void WriteAscii(char ch, unsigned int x, unsigned int y, const Color *c) {
 	}
 }
 
-void WriteString(char *str, unsigned int x, unsigned int y, Color *c) {
+void WriteString(const char *str, unsigned int x, unsigned int y, const Color *c) {
 	for(int i = 0; i < strlen(str); i++) {
 		WriteAscii(str[i], x+i*8, y, c);
 	}
 }
 
-void WriteSquare(unsigned int x1, unsigned int y1, unsigned x2, unsigned y2, Color *c) {
+void WriteSquare(unsigned int x1, unsigned int y1, unsigned x2, unsigned y2, const Color *c) {
 	for(int j = y1; j <= y2; j++) {
 		for(int i = x1; i <= x2; i++) {
 			WritePixel(i,j,c);

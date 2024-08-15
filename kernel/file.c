@@ -41,14 +41,14 @@ FILE *SearchFile(char name[]) {
 	return NULL;
 }
 
-void DeleteFile(char name[]) {
+int DeleteFile(char name[]) {
 	FILE *f = SearchFile(name);
 	if(f == NULL) {
-		return;
+		return 1;
 	}
 	f->available = false;
 	f->size = 0;
-	return;
+	return 0;
 }
 
 char *GetFileData(FILE *file) {

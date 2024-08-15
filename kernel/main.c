@@ -7,6 +7,7 @@
 #include "keyboard.h"
 #include "file.h"
 #include "cursor.h"
+#include "parse.h"
 
 extern FrameInfo *frame_info;
 extern char keycode[];
@@ -15,14 +16,23 @@ void hlt() {
 	while(1) asm("hlt");
 }
 
+const Color white = {255,255,255,0};
+const Color black = {0,0,0,0};
+
+void Print(const char *str) {
+	int len = strlen(str);
+	WriteSquare(0,0,len*8+7, 15, &black);
+	WriteString(str, 0,0,&white);
+	Scroll(20);
+	WriteSquare(0,0,len*8+7, 15, &black);
+}
+
 __attribute__((ms_abi))
 int KernelMain(FrameInfo *fi){
 	frame_info = fi;
 	InitializeKeycode();
 
 	ClearScreen();
-	Color white = {255,255,255,0};
-	Color black = {0,0,0,0};
 
 	CURSOR *cur;
 	cur = InitializeCursor(&white);
@@ -58,10 +68,14 @@ int KernelMain(FrameInfo *fi){
 					EraseCursor(cur);
 					Scroll(20);
 					WriteSquare(0,y,x+7,y+15, &black);
-					if(strncmp(line, "echo ", 5) == 0) {
-						WriteString(line+5, 0, 0, &white);
-						Scroll(20);
-						WriteSquare(0,y,x+7,y+15, &black);
+					const TOKEN_LIST *tl = Tokenize(line);
+					if(strcmp(GetToken(tl, 0), "echo") == 0) {
+						memset(line, '\0', strlen(line));
+						for(int i = 1; i < GetTokenNum(tl); i++) {
+							strcat(line, GetToken(tl, i));
+							strcat(line, " ");
+						}
+						Print(line);
 					} else if(strncmp(line, "ls", 2) == 0) {
 						strcpy(line, FileList());
 						WriteString(line, 0, 0, &white);
@@ -79,7 +93,17 @@ int KernelMain(FrameInfo *fi){
 							Scroll(20);
 							WriteSquare(0,y,strlen(line)*8+7, y+15, &black);
 						}
-					}
+					} else if(strncmp(line, "rm ", 3) == 0) {
+						if(DeleteFile(line+3) == 0) {
+							WriteString("delete successfully.", 0, y, &white);
+							Scroll(20);
+							WriteSquare(0,y,strlen("delete successfully.")*8+7, y+15, &black);
+						} else {
+							WriteString("failed to delete.", 0, y, &white);
+							Scroll(20);
+							WriteSquare(0,y,strlen("failed to delete.")*8+7, y+15, &black);
+						}
+					}	
 					MoveCursor(cur, 0, 0);
 					PrintCursor(cur);
 					i = 0;

@@ -11,9 +11,9 @@ typedef struct {
 } Color;
 
 void WritePixel(unsigned int x, unsigned int y, const Color *c);
-void WriteAscii(char ch, unsigned int x, unsigned int y, const Color *c);
-void WriteString(char *str, unsigned int x, unsigned int y, Color *c);
-void WriteSquare(unsigned int x1, unsigned int y1, unsigned x2, unsigned y2, Color *c);
+void WriteAscii(const char ch, unsigned int x, unsigned int y, const Color *c);
+void WriteString(const char *str, unsigned int x, unsigned int y, const Color *c);
+void WriteSquare(unsigned int x1, unsigned int y1, unsigned x2, unsigned y2, const Color *c);
 void ClearScreen();
 void Scroll(unsigned int y);
 

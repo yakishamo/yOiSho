@@ -1,8 +1,8 @@
 TARGET = kernel.elf
-OBJS = asmfunc.o main.o hankaku.o frame.o string.o keyboard.o file.o cursor.o
+OBJS = asmfunc.o main.o hankaku.o frame.o string.o keyboard.o file.o cursor.o parse.o
 
 CXXFLAGS += -O0 -Wall -g --target=x86_64-elf -ffreestanding -mno-red-zone \
-						-fno-exceptions -fno-rtti
+						-fno-exceptions -fno-rtti -Werror
 LDFLAGS += --entry KernelMain -z norelro --image-base 0x100000 --static
 
 .PHONY: all
@@ -23,4 +23,4 @@ asmfunc.o: asmfunc.asm
 	nasm -f elf64 -o asmfunc.o asmfunc.asm
 
 %.o: %.c Makefile
-	gcc $(CXXFLAGS) -c $<
+	gcc $(CXXFLAGS) -c -o $@ $<

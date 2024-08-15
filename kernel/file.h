@@ -9,7 +9,7 @@ typedef struct _FILE FILE;
 void InitializeFilesytem();
 FILE *CreateFile(char name[], char data[], int size);
 FILE *SearchFile(char name[]);
-void DeleteFile(char name[]);
+int DeleteFile(char name[]);
 char *GetFileData(FILE *file);
 char *FileList();
 
