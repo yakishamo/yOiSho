@@ -36,12 +36,12 @@ void *memcpy(void *buf1, void *buf2, size_t n) {
 int strcmp(const char *s1, const char *s2) {
 	const char *p1 = s1;
 	const char *p2 = s2;
-	while(*p1 == '\0' && *p2 == '\0') {
-		if(*p1 - *p2 != 0) return *p1 - *p2;
+	while(*p1 && *p2) {
+		if(*p1 - *p2) return *p1 - *p2;
 		p1++;
 		p2++;
 	}
-	return p1[1] - p2[1];
+	return *p1 - *p2;
 }
 
 int strncmp(const char *s1, const char *s2, size_t n) {

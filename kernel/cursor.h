@@ -3,7 +3,13 @@
 
 typedef struct _CURSOR CURSOR;
 
-CURSOR *InitializeCursor(const Color *c);
+struct _CURSOR {
+	unsigned int x;
+	unsigned int y;
+	Color c;
+};
+
+CURSOR *InitializeCursor(CURSOR *cursor, const Color *c);
 void PrintCursor(CURSOR *cur);
 void EraseCursor(CURSOR *cur);
 void MoveCursor(CURSOR *cur, unsigned int x, unsigned int y);

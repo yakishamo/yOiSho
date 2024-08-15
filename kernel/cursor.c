@@ -6,22 +6,14 @@
 #define CURSOR_XSIZE 8
 #define CURSOR_YSIZE 2
 
-struct _CURSOR {
-	unsigned int x;
-	unsigned int y;
-	Color c;
-};
-
-CURSOR cursor;
-
-CURSOR *InitializeCursor(const Color *c) {
-	cursor.x = 0;
-	cursor.y = 0;
-	cursor.c.red = c->red;
-	cursor.c.green = c->green;
-	cursor.c.blue = c->blue;
-	cursor.c.reserved = c->reserved;
-	return &cursor;
+CURSOR *InitializeCursor(CURSOR *cursor, const Color *c) {
+	cursor->x = 0;
+	cursor->y = 0;
+	cursor->c.red = c->red;
+	cursor->c.green = c->green;
+	cursor->c.blue = c->blue;
+	cursor->c.reserved = c->reserved;
+	return cursor;
 }
 
 void PrintCursor(CURSOR *cur) {

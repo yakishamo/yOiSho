@@ -8,7 +8,7 @@
 
 struct _FILE {
 	char name[FILE_NAME_MAX_SIZE];
-	char data[FILE_NAME_MAX_SIZE];
+	char data[FILE_DATA_MAX_SIZE];
 	int size;
 	bool available;
 };
@@ -19,7 +19,7 @@ void InitializeFilesystem() {
 	memset((char*)filesystem, 0, sizeof(filesystem));
 }
 
-FILE *CreateFile(char name[], char data[], int size) {
+FILE *CreateFile(const char name[], const char data[], int size) {
 	int i = 0;
 	if(SearchFile(name) != NULL) return NULL;
 	while(filesystem[i].available && i < DIRECTORY_MAX) i++;
@@ -32,7 +32,7 @@ FILE *CreateFile(char name[], char data[], int size) {
 	return filesystem + i;
 }	
 
-FILE *SearchFile(char name[]) {
+FILE *SearchFile(const char name[]) {
 	for(int i = 0; i < DIRECTORY_MAX; i++) {
 		if(strcmp(filesystem[i].name, name) == 0 && filesystem[i].available) {
 			return filesystem + i;
@@ -41,7 +41,7 @@ FILE *SearchFile(char name[]) {
 	return NULL;
 }
 
-int DeleteFile(char name[]) {
+int DeleteFile(const char name[]) {
 	FILE *f = SearchFile(name);
 	if(f == NULL) {
 		return 1;
@@ -51,8 +51,8 @@ int DeleteFile(char name[]) {
 	return 0;
 }
 
-char *GetFileData(FILE *file) {
-	return file->data;
+const char *GetFileData(const FILE *file) {
+return file->data;
 }
 
 char file_name_list[FILE_NAME_MAX_SIZE * (DIRECTORY_MAX+1)];
@@ -65,4 +65,19 @@ char *FileList() {
 		}
 	}
 	return file_name_list;
+}
+
+int WriteFile(const char name[], const char data[]) {
+	FILE *file = SearchFile(name);
+	if(strlen(data) > FILE_DATA_MAX_SIZE) return 1;
+	strcpy(file->data, data);
+	return 0;
+}
+
+char read_file_buf[0x100];
+const char *ReadFile(const char name[]) {
+	FILE *file = SearchFile(name);
+	if(file == NULL) return NULL;
+	strcpy(read_file_buf, file->data);
+	return read_file_buf;
 }

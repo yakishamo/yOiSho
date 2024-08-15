@@ -10,14 +10,13 @@ all: $(TARGET)
 
 .PHONY: clean
 clean:
-	rm -rf *.o
+	rm -rf *.o *.elf
 
 kernel.elf: $(OBJS) Makefile
 	ld.lld $(LDFLAGS) -o kernel.elf $(OBJS)
 
 string.o: string.c Makefile
 	gcc -O3 -Wall -g --target=x86_64-elf -ffreestanding -mno-red-zone -fno-exceptions -fno-rtti -c -o string.o string.c
-
 
 asmfunc.o: asmfunc.asm
 	nasm -f elf64 -o asmfunc.o asmfunc.asm

@@ -29,13 +29,15 @@ void Print(const char *str) {
 
 __attribute__((ms_abi))
 int KernelMain(FrameInfo *fi){
+
 	frame_info = fi;
 	InitializeKeycode();
 
 	ClearScreen();
 
-	CURSOR *cur;
-	cur = InitializeCursor(&white);
+	CURSOR cur_;
+	CURSOR *cur = &cur_;
+	cur = InitializeCursor(cur, &white);
 	MoveCursor(cur, 0, 0);
 	PrintCursor(cur);
 	int i = 0;
@@ -76,34 +78,40 @@ int KernelMain(FrameInfo *fi){
 							strcat(line, " ");
 						}
 						Print(line);
-					} else if(strncmp(line, "ls", 2) == 0) {
+					} else if(strcmp(GetToken(tl, 0), "ls") == 0) {
 						strcpy(line, FileList());
-						WriteString(line, 0, 0, &white);
-						Scroll(20);
-						WriteSquare(0,y,strlen(line)*8+7, y+15, &black);
-					} else if(strncmp(line, "touch ", 6) == 0) {
-						FILE *f = CreateFile(line+6, "", 0);
+						Print(line);
+					} else if(strcmp(GetToken(tl, 0), "touch") == 0) {
+						FILE *f = CreateFile(GetToken(tl,1), "", 0);
 						if(f == NULL) {
-							WriteString("failed to create file.", 0, y, &white);
-							Scroll(20);
-							WriteSquare(0,y,strlen("failed to create file.")*8+7, y+15, &black);
+							memset(line, '\0', strlen(line));
+							strcat(line, "failed to create ");
+							strcat(line, GetToken(tl, 1));
+							Print(line);
 						} else {
 							strcat(line, " created.");
-							WriteString(line+6, 0, y, &white);
-							Scroll(20);
-							WriteSquare(0,y,strlen(line)*8+7, y+15, &black);
+							Print(line+6);
 						}
-					} else if(strncmp(line, "rm ", 3) == 0) {
+					} else if(strcmp(GetToken(tl, 0), "rm") == 0) {
 						if(DeleteFile(line+3) == 0) {
-							WriteString("delete successfully.", 0, y, &white);
-							Scroll(20);
-							WriteSquare(0,y,strlen("delete successfully.")*8+7, y+15, &black);
+							Print("delete successfully.");
 						} else {
-							WriteString("failed to delete.", 0, y, &white);
-							Scroll(20);
-							WriteSquare(0,y,strlen("failed to delete.")*8+7, y+15, &black);
+							Print("failed to delete.");
 						}
-					}	
+					}	else if(strcmp(GetToken(tl, 0), "write") == 0) {
+						memset(line, '\0', strlen(line));
+						int ret = WriteFile(GetToken(tl, 1), GetToken(tl, 2));
+						if(ret == 0) {
+							Print("write successfully.");
+						} else {
+							Print("failed to write.");
+						}
+					} else if(strcmp(GetToken(tl, 0), "cat") == 0) {
+						memset(line, '\0', strlen(line));
+						const char *str = ReadFile(GetToken(tl, 1));
+						if(str == NULL) Print("ReadFile() failed.");
+						else Print(str);
+					}
 					MoveCursor(cur, 0, 0);
 					PrintCursor(cur);
 					i = 0;
