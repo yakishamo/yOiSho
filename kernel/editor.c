@@ -55,9 +55,11 @@ int editor(const char *name, unsigned int x, unsigned int y) {
 						}
 					}
 				} else {
-					WriteSquare(cur->x, cur->y, cur->x+7, cur->y+15, &black);
-					WriteAscii(ich, cur->x, cur->y, &white);
+					int len = strlen(line+i);
+					memmove(line+i+1, line+i, len+1);
 					line[i++] = ich;
+					WriteSquare(cur->x, cur->y, cur->x+len*8+7, cur->y+15, &black);
+					WriteString(line+i-1, cur->x, cur->y, &white);
 					CursorNext(cur);
 				}
 			} else if (code == 0xE0) {

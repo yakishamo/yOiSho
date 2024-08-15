@@ -116,6 +116,8 @@ int KernelMain(FrameInfo *fi){
 						editor(GetToken(tl, 1), 0, 0);
 						Scroll(20);
 						WriteSquare(0,0,frame_info->horizontal_resolution*4,15,&black);
+					} else if(strcmp(GetToken(tl, 0), "clear") == 0) {
+						ClearScreen();
 					}
 					MoveCursor(cur, 0, 0);
 					PrintCursor(cur);
