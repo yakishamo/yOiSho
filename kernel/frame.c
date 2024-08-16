@@ -25,7 +25,7 @@ void WriteAscii(const char ch, unsigned int x, unsigned int y, const Color *c) {
 	unsigned char *font = getFont(ch);
 	for(int i = 0; i < 16; i++) {
 		for(int j = 0; j < 8; j++) {
-			if(((font[i] >> (8-j))&0x01) == 1) {
+			if(((font[i] >> (8-j))&0x01)) {
 				WritePixel(x+j, y+i, c);
 			}
 		}

@@ -9,5 +9,6 @@
 #define KBC_MODE                0x47    // マウスを利用するモードにするコマンド
 
 void InitializeKeycode();
+char TransrateKeycode(unsigned char code, int is_shift);
 
 #endif /* KEYBOARD_H */

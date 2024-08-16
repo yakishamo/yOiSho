@@ -10,8 +10,6 @@
 extern const Color black;
 extern const Color white;
 
-extern char keycode[];
-
 int editor(const char *name, unsigned int x, unsigned int y) {
 	CURSOR cur_;
 	CURSOR *cur = &cur_;
@@ -33,8 +31,8 @@ int editor(const char *name, unsigned int x, unsigned int y) {
 	}
 	while(1) {
 		if((IoIn8(0x64) & 0x01) == 1) {
-			int code  = IoIn8(0x60);
-			char ich =keycode[code];
+			unsigned char code  = IoIn8(0x60);
+			char ich =TransrateKeycode(code, 0);
 			if(code < 0x80 && ich != '\0') {
 				if(ich == '\n') {
 					EraseCursor(cur);

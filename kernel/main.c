@@ -11,7 +11,6 @@
 #include "editor.h"
 
 extern FrameInfo *frame_info;
-extern char keycode[];
 
 void hlt() {
 	while(1) asm("hlt");
@@ -52,8 +51,8 @@ int KernelMain(FrameInfo *fi){
 	CursorNext(cur);
 	while(1) {
 		if((IoIn8(0x64) & 0x01) == 1) {
-			int code = IoIn8(0x60);
-			char ich = keycode[code];
+			unsigned char code = IoIn8(0x60);
+			char ich = TransrateKeycode(code, 0);
 			if(code < 0x80 && ich != '\0') {
 				if(ich == '\b' && i > 0) {
 					i--;

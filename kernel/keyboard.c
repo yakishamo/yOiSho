@@ -15,3 +15,7 @@ void InitializeKeycode () {
 	keycode[125] = '\\';
 	return;
 }
+
+char TransrateKeycode(unsigned char code, int is_shift) {
+	return keycode[code];
+}
