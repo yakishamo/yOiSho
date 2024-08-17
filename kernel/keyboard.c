@@ -17,5 +17,10 @@ void InitializeKeycode () {
 }
 
 char TransrateKeycode(unsigned char code, int is_shift) {
+	if(is_shift) {
+		if(keycode[code] >= 'a' && keycode[code] <= 'z' ) {
+			return keycode[code] + ('A' - 'a');
+		}
+	}
 	return keycode[code];
 }

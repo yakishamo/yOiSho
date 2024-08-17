@@ -49,10 +49,18 @@ int KernelMain(FrameInfo *fi){
 	x+=16;
 	CursorNext(cur);
 	CursorNext(cur);
+	int is_shift = 0;
 	while(1) {
 		if((IoIn8(0x64) & 0x01) == 1) {
 			unsigned char code = IoIn8(0x60);
-			char ich = TransrateKeycode(code, 0);
+			char ich = TransrateKeycode(code, is_shift);
+			if(code == 0x2A || code == 0x36) {
+				is_shift = 1;
+				continue;
+			} else if (code == 0xAA || code == 0xB6) {
+				is_shift = 0;
+				continue;
+			}
 			if(code < 0x80 && ich != '\0') {
 				if(ich == '\b' && i > 0) {
 					i--;
