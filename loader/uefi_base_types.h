@@ -18,7 +18,13 @@ typedef uint64_t  UINT64;
 // How to define INT128 and UINT128 ?
 
 typedef uint8_t   CHAR8;
+/*
+#ifdef __linux__
+typedef int CHAR16;
+#elif DEFINE(__APPLE__)
+*/
 typedef uint16_t  CHAR16;
+// #endif
 typedef void      VOID;
 
 typedef struct {

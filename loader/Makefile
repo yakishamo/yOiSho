@@ -1,11 +1,14 @@
-TARGET = BOOTX64.efi
+TARGET = BOOTX64.EFI
+OS := $(shell uname -s)
+CC:=x86_64-w64-mingw32-gcc
+CFLAGS:=-Wall -Wextra -e efi_main -nostdinc -nostdlib \
+				-Wno-pointer-to-int-cast -fno-builtin -Wl,--subsystem,10 
 
 .PHONY all:
 all: $(TARGET)
 
 $(TARGET): main.c Makefile
-	x86_64-w64-mingw32-gcc -Wall -Wextra -e efi_main -nostdinc -nostdlib \
-         -Wno-pointer-to-int-cast -fno-builtin -Wl,--subsystem,10 -o $@ $<
+	$(CC) $(CFLAGS) -o $@ $<
 
 run:
 	cp ./BOOTX64.efi ./fs/EFI/BOOT/BOOTX64.efi
