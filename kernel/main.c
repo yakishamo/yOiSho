@@ -90,7 +90,12 @@ int KernelMain(FrameInfo *fi){
 						strcpy(line, FileList());
 						Print(line);
 					} else if(strcmp(GetToken(tl, 0), "touch") == 0) {
-						FILE *f = CreateFile(GetToken(tl,1), "", 0);
+						FILE *f = NULL;
+						if(GetToken(tl, 1) == NULL) {
+							Print("please set filename");
+						} else {
+							f = CreateFile(GetToken(tl,1), "", 0);
+						}
 						if(f == NULL) {
 							memset(line, '\0', strlen(line));
 							strcat(line, "failed to create ");
