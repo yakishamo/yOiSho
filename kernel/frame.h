@@ -12,6 +12,7 @@ typedef struct {
 
 extern const Color white;
 extern const Color black;
+extern const Color red;
 
 void WritePixel(unsigned int x, unsigned int y, const Color *c);
 void WriteAscii(const char ch, unsigned int x, unsigned int y, const Color *c);

@@ -8,6 +8,7 @@ extern unsigned char kernel_hankaku_len;
 
 const Color white = {255, 255, 255, 0};
 const Color black = {0, 0, 0, 0};
+const Color red = {255, 0, 0, 0};
 
 FrameInfo *frame_info;
 
@@ -28,7 +29,7 @@ void WriteAscii(const char ch, unsigned int x, unsigned int y, const Color *c) {
 	unsigned char *font = getFont(ch);
 	for(int i = 0; i < 16; i++) {
 		for(int j = 0; j < 8; j++) {
-			if(((font[i] >> (8-j))&0x01)) {
+			if(((font[i] >> (7-j))&0x01)) {
 				WritePixel(x+j, y+i, c);
 			}
 		}
