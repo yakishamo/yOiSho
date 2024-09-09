@@ -6,6 +6,9 @@
 extern unsigned char kernel_hankaku[];
 extern unsigned char kernel_hankaku_len;
 
+const Color white = {255, 255, 255, 0};
+const Color black = {0, 0, 0, 0};
+
 FrameInfo *frame_info;
 
 unsigned char *getFont(char c) {

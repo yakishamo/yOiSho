@@ -4,7 +4,7 @@
 
 #include "string.h"
 
-#define DIRECTORY_MAX 5
+#define DIRECTORY_MAX 4
 
 struct _FILE {
 	char name[FILE_NAME_MAX_SIZE];

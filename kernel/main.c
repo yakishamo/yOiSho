@@ -9,22 +9,12 @@
 #include "cursor.h"
 #include "parse.h"
 #include "editor.h"
+#include "terminal.h"
 
 extern FrameInfo *frame_info;
 
 void hlt() {
 	while(1) asm("hlt");
-}
-
-const Color white = {255,255,255,0};
-const Color black = {0,0,0,0};
-
-void Print(const char *str) {
-	int len = strlen(str);
-	WriteSquare(0,0,len*8+7, 15, &black);
-	WriteString(str, 0,0,&white);
-	Scroll(20);
-	WriteSquare(0,0,len*8+7, 15, &black);
 }
 
 __attribute__((ms_abi))
@@ -35,6 +25,8 @@ int KernelMain(FrameInfo *fi){
 
 	ClearScreen();
 
+	terminal();
+/*
 	CURSOR cur_;
 	CURSOR *cur = &cur_;
 	cur = InitializeCursor(cur, &white);
@@ -144,7 +136,7 @@ int KernelMain(FrameInfo *fi){
 			}
 		}
 	}
-
+*/
 	hlt();
 	return 0;
 }

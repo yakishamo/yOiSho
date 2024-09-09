@@ -10,6 +10,9 @@ typedef struct {
 	uint8_t reserved;
 } Color;
 
+extern const Color white;
+extern const Color black;
+
 void WritePixel(unsigned int x, unsigned int y, const Color *c);
 void WriteAscii(const char ch, unsigned int x, unsigned int y, const Color *c);
 void WriteString(const char *str, unsigned int x, unsigned int y, const Color *c);
