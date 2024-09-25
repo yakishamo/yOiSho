@@ -2,7 +2,7 @@
 
 #include "parse.h"
 
-#define TOKEN_NUM_MAX 5
+#define TOKEN_NUM_MAX 0x10
 
 struct TOKEN_LIST_ {
 	char tokens[TOKEN_NUM_MAX][0x100];

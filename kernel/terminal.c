@@ -9,7 +9,7 @@
 #include "frame.h"
 #include "cursor.h"
 
-#define TERMINAL_LINE_SIZE 0x100
+#define TERMINAL_LINE_LEN 0x100
 
 extern FrameInfo *frame_info;
 
@@ -21,10 +21,24 @@ void Print(const char *str) {
 	WriteSquare(0,0,len*8+7, 15, &black);
 }
 
-void command(char *line) {}
+void command(char *line) {
+	char line_buf[TERMINAL_LINE_LEN];
+	const TOKEN_LIST *tl = Tokenize(line);
+	memset(line_buf, 0, TERMINAL_LINE_LEN);
+	if(strcmp(GetToken(tl,0), "echo") == 0) {
+		for(int i = 1; i < GetTokenNum(tl); i++) {
+			strcat(line_buf, GetToken(tl, i));
+			strcat(line_buf, " ");
+		}
+		strcat (line_buf, "\0");
+		Print(line_buf);
+	}	else if(strcmp(GetToken(tl,0), "clear") == 0 ) {
+		ClearScreen();
+	}
+}
 
 void terminal() {
-	char line[TERMINAL_LINE_SIZE];
+	char line[TERMINAL_LINE_LEN];
 	int x = 0, y = 0;
 	int i = 0;
 	int is_shift = 0;
@@ -35,7 +49,7 @@ void terminal() {
 	MoveCursor(cur, 0, 0);
 	PrintCursor(cur);
 
-	memset(line, '\0', TERMINAL_LINE_SIZE);
+	memset(line, '\0', TERMINAL_LINE_LEN);
 	WriteString("> ", x, y, &white);
 	x+=2;
 	CursorNext(cur);
@@ -66,9 +80,10 @@ void terminal() {
 					i++;
 				} else if(ascii == '\n') {
 					EraseCursor(cur);
-					command(line);
 					Scroll(20);
-					memset(line, '\0', TERMINAL_LINE_SIZE);
+					WriteSquare(0,0,frame_info->horizontal_resolution*4, 15, &black);
+					command(line);
+					memset(line, '\0', TERMINAL_LINE_LEN);
 					WriteSquare(0,0,frame_info->horizontal_resolution*4, 15, &black);
 					WriteString("> ", x=0, y=0, &white);
 					x = 2;
