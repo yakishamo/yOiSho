@@ -43,6 +43,15 @@ void touch(const char *file_name) {
 	Print("created");
 }
 
+void rm(const char *file_name) {
+	Print(file_name);
+	if(DeleteFile(file_name) == 0) {
+		Print("successfully deleted");
+	} else {
+		Print("failed to delete");
+	}
+}
+
 void echo(const TOKEN_LIST *tl) {
 	char line_buf[TERMINAL_LINE_LEN];
 	memset(line_buf, 0, TERMINAL_LINE_LEN);
@@ -65,6 +74,8 @@ void command(char *line) {
 		ls();
 	} else if(strcmp(GetToken(tl,0), "touch") == 0) {
 		touch(GetToken(tl, 1));
+	} else if(strcmp(GetToken(tl,0), "rm") == 0) {
+		rm(GetToken(tl,1));
 	}
 }
 
