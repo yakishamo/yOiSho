@@ -16,9 +16,11 @@ int editor(const char *name, unsigned int x, unsigned int y) {
 	char line[0x100] = "";
 	int i = 0;
 	cur = InitializeCursor(cur, &white);
+	MoveCursor(cur, 0, 0);
 	PrintCursor(cur);
 	FILE *file = SearchFile(name);
 	if(file == NULL) {
+		if(name == NULL || strcmp(name,"") == 0) return -1;
 		file = CreateFile(name, "", 0);
 		if(file == NULL) {
 			return 1;

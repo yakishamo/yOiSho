@@ -32,19 +32,18 @@ void ls() {
 void touch(const char *file_name) {
 	FILE *f = NULL;
 	if(file_name == NULL) {
-		Print("error: filename is not specified");
+		Print("filename is not specified");
 		return;
 	}
 	f = CreateFile(file_name, "", 0);
 	if(f == NULL) {
-		Print("error: failed to create");
+		Print("failed to create");
 		return;
 	}
 	Print("created");
 }
 
 void rm(const char *file_name) {
-	Print(file_name);
 	if(DeleteFile(file_name) == 0) {
 		Print("successfully deleted");
 	} else {
@@ -62,20 +61,32 @@ void echo(const TOKEN_LIST *tl) {
 	Print(line_buf);
 }
 
+void cat(const char* file_name) {
+	const char *str = ReadFile(file_name);
+	if(str == NULL) {
+		Print("ReadFile failed");
+	} else {
+		Print(str);
+	}
+}
+
 void command(char *line) {
-	char line_buf[TERMINAL_LINE_LEN];
 	const TOKEN_LIST *tl = Tokenize(line);
-	memset(line_buf, 0, TERMINAL_LINE_LEN);
-	if(strcmp(GetToken(tl,0), "echo") == 0) {
+	const char *first_token = GetToken(tl, 0);
+	if(strcmp(first_token, "echo") == 0) {
 		echo(tl);
-	}	else if(strcmp(GetToken(tl,0), "clear") == 0 ) {
+	}	else if(strcmp(first_token, "clear") == 0 ) {
 		clear();
-	} else if(strcmp(GetToken(tl,0), "ls") == 0 ) {
+	} else if(strcmp(first_token, "ls") == 0 ) {
 		ls();
-	} else if(strcmp(GetToken(tl,0), "touch") == 0) {
+	} else if(strcmp(first_token, "touch") == 0) {
 		touch(GetToken(tl, 1));
-	} else if(strcmp(GetToken(tl,0), "rm") == 0) {
+	} else if(strcmp(first_token, "rm") == 0) {
 		rm(GetToken(tl,1));
+	} else if(strcmp(first_token, "cat") == 0) {
+		cat(GetToken(tl, 1));
+	} else if(strcmp(first_token, "edit") == 0) {
+		editor(GetToken(tl, 1), 0, 0);
 	}
 }
 

@@ -17,17 +17,17 @@ CURSOR *InitializeCursor(CURSOR *cursor, const Color *c) {
 }
 
 void PrintCursor(CURSOR *cur) {
-	WriteSquare(cur->x, cur->y+13, 
+	WriteSquare(cur->x, cur->y+16, 
 			cur->x + CURSOR_XSIZE, 
-			cur->y + CURSOR_YSIZE+13,
+			cur->y + CURSOR_YSIZE+16,
 			&cur->c);
 }
 
 void EraseCursor(CURSOR *cur) {
 	Color black = {0,0,0,0};
-	WriteSquare(cur->x, cur->y+13,
+	WriteSquare(cur->x, cur->y+16,
 			cur->x + CURSOR_XSIZE,
-			cur->y + CURSOR_YSIZE+13,
+			cur->y + CURSOR_YSIZE+16,
 			&black);
 }	
 
