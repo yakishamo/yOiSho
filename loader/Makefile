@@ -2,7 +2,8 @@ TARGET = BOOTX64.EFI
 OS := $(shell uname -s)
 CC:=x86_64-w64-mingw32-gcc
 CFLAGS:=-Wall -Wextra -e efi_main -nostdinc -nostdlib \
-				-Wno-pointer-to-int-cast -fno-builtin -Wl,--subsystem,10 
+				-Wno-pointer-to-int-cast -fno-builtin -Wl,--subsystem,10 \
+				-I../ueif/
 
 .PHONY all:
 all: $(TARGET)
