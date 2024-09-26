@@ -34,6 +34,25 @@ void command(char *line) {
 		Print(line_buf);
 	}	else if(strcmp(GetToken(tl,0), "clear") == 0 ) {
 		ClearScreen();
+	} else if(strcmp(GetToken(tl,0), "ls") == 0 ) {
+		strcpy(line_buf, FileList());
+		Print(line_buf);
+	} else if(strcmp(GetToken(tl,0), "touch") == 0) {
+		FILE *f = NULL;
+		if(GetToken(tl, 1) == NULL) {
+			Print("please set filename");
+		} else {
+			f = CreateFile(GetToken(tl, 1), "", 0);
+		}
+		if(f == NULL) {
+			strcat(line_buf, "failed to create ");
+			strcat(line_buf, GetToken(tl, 1));
+			Print(line_buf);
+		} else {
+			strcat(line_buf, GetToken(tl, 1));
+			strcat(line_buf, " created");
+			Print(line_buf);
+		}
 	}
 }
 
