@@ -21,38 +21,50 @@ void Print(const char *str) {
 	WriteSquare(0,0,len*8+7, 15, &black);
 }
 
+void clear() {
+	ClearScreen();
+}
+
+void ls() {
+	Print(FileList());
+}
+
+void touch(const char *file_name) {
+	FILE *f = NULL;
+	if(file_name == NULL) {
+		Print("error: filename is not specified");
+		return;
+	}
+	f = CreateFile(file_name, "", 0);
+	if(f == NULL) {
+		Print("error: failed to create");
+		return;
+	}
+	Print("created");
+}
+
+void echo(const TOKEN_LIST *tl) {
+	char line_buf[TERMINAL_LINE_LEN];
+	memset(line_buf, 0, TERMINAL_LINE_LEN);
+	for(int i = 1; i < GetTokenNum(tl); i++) {
+		strcat(line_buf, GetToken(tl, i));
+		strcat(line_buf, " ");
+	}
+	Print(line_buf);
+}
+
 void command(char *line) {
 	char line_buf[TERMINAL_LINE_LEN];
 	const TOKEN_LIST *tl = Tokenize(line);
 	memset(line_buf, 0, TERMINAL_LINE_LEN);
 	if(strcmp(GetToken(tl,0), "echo") == 0) {
-		for(int i = 1; i < GetTokenNum(tl); i++) {
-			strcat(line_buf, GetToken(tl, i));
-			strcat(line_buf, " ");
-		}
-		strcat (line_buf, "\0");
-		Print(line_buf);
+		echo(tl);
 	}	else if(strcmp(GetToken(tl,0), "clear") == 0 ) {
-		ClearScreen();
+		clear();
 	} else if(strcmp(GetToken(tl,0), "ls") == 0 ) {
-		strcpy(line_buf, FileList());
-		Print(line_buf);
+		ls();
 	} else if(strcmp(GetToken(tl,0), "touch") == 0) {
-		FILE *f = NULL;
-		if(GetToken(tl, 1) == NULL) {
-			Print("please set filename");
-		} else {
-			f = CreateFile(GetToken(tl, 1), "", 0);
-		}
-		if(f == NULL) {
-			strcat(line_buf, "failed to create ");
-			strcat(line_buf, GetToken(tl, 1));
-			Print(line_buf);
-		} else {
-			strcat(line_buf, GetToken(tl, 1));
-			strcat(line_buf, " created");
-			Print(line_buf);
-		}
+		touch(GetToken(tl, 1));
 	}
 }
 
