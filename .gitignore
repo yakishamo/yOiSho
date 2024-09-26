@@ -3,3 +3,4 @@
 *.efi
 *.elf
 ovmf
+.DS_Store
