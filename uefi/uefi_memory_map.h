@@ -5,7 +5,7 @@
 #include "uefi_memory.h"
 
 typedef struct {
-	UINT32               Type;
+	UINT32               Type; //EFI_MEMORY_TYPE
 	EFI_PHYSICAL_ADDRESS PhysicalStart;
 	EFI_VIRTUAL_ADDRESS  VirtualStart;
 	UINT64               NumberOfPages;
