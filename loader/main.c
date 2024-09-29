@@ -5,7 +5,7 @@
 #include "../uefi/uefi_graphics_output_protocol.h"
 #include "../common/elf.h"
 #include "../common/frame_info.h"
-#include "memory_map.h"
+#include "../common/memory_map.h"
 
 EFI_BOOT_SERVICES *gBS;
 EFI_SYSTEM_TABLE *gST;
@@ -264,23 +264,37 @@ EFI_STATUS EFIAPI efi_main(void *image_handle __attribute((unused)),
 	Print(L"\r\n");
 
 	// exit bootservice
-	MemoryMap mmap = {NULL,0,0,4096*4,0};
+	MemoryMap *memory_map = NULL;
 	status = gBS->AllocatePool(
 			EfiLoaderData,
-			mmap.map_size,
-			(VOID**)&mmap.desc
+			sizeof(MemoryMap),
+			(VOID**)&memory_map
 			);
 	if(status != EFI_SUCCESS) {
 		Print(L"failed to allocate pool for memory map\r\n");
 		hlt();
 	}
+	memory_map->desc = NULL;
+	memory_map->desc_size = 0;
+	memory_map->desc_ver = 0;
+	memory_map->map_size = 4096*4;
+	memory_map->map_key = 0;
+	status = gBS->AllocatePool(
+			EfiLoaderData,
+			memory_map->map_size,
+			(VOID**)&memory_map->desc
+			);
+	if(status != EFI_SUCCESS) {
+		Print(L"failed to allocate pool for memory descriptor\r\n");
+		hlt();
+	}
 
 	status = gBS->GetMemoryMap(
-			&mmap.map_size,
-			mmap.desc,
-			&mmap.map_key,
-			&mmap.desc_size,
-			&mmap.desc_ver
+			&memory_map->map_size,
+			memory_map->desc,
+			&memory_map->map_key,
+			&memory_map->desc_size,
+			&memory_map->desc_ver
 			);
 	if(status != EFI_SUCCESS) {
 		Print(L"failed to get memory map\r\nstatus = 0x");
@@ -288,15 +302,15 @@ EFI_STATUS EFIAPI efi_main(void *image_handle __attribute((unused)),
 		hlt();
 	}
 
-	status = gBS->ExitBootServices(image_handle, mmap.map_key);
+	status = gBS->ExitBootServices(image_handle, memory_map->map_key);
 	if(status != EFI_SUCCESS) {
 		Print(L"faield to exit bootservices\r\n");
 		hlt();
 	}
 
-	typedef void (*kernel_main_t) (FrameInfo *frame_info);
+	typedef void (*kernel_main_t) (FrameInfo *frame_info, MemoryMap *memory_map);
 	kernel_main_t kernel_main = (kernel_main_t)ehdr->e_entry;
-	kernel_main(fi);
+	kernel_main(fi, memory_map);
 
 	hlt();
 	return EFI_SUCCESS;

@@ -61,3 +61,11 @@ void Scroll(unsigned int y) {
 			frame_info->frame_base,
 			frame_info->frame_size - frame_info->pixel_per_scanline * 4 * y);
 }
+
+void Print(const char *str) {
+	int len = strlen(str);
+	WriteSquare(0,0,len*8+7, 15, &black);
+	WriteString(str, 0,0,&white);
+	Scroll(20);
+	WriteSquare(0,0,len*8+7, 15, &black);
+}

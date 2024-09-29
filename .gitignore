@@ -5,3 +5,4 @@
 ovmf
 .DS_Store
 *.swp
+*.EFI

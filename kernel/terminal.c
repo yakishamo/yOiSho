@@ -13,13 +13,6 @@
 
 extern FrameInfo *frame_info;
 
-void Print(const char *str) {
-	int len = strlen(str);
-	WriteSquare(0,0,len*8+7, 15, &black);
-	WriteString(str, 0,0,&white);
-	Scroll(20);
-	WriteSquare(0,0,len*8+7, 15, &black);
-}
 
 void clear() {
 	ClearScreen();

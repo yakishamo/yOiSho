@@ -1,6 +1,7 @@
 #include "../common/types64.h"
 #include "../common/frame_info.h"
 #include "../common/def.h"
+#include "../common/memory_map.h"
 #include "frame.h"
 #include "string.h"
 #include "asmfunc.h"
@@ -18,7 +19,7 @@ void hlt() {
 }
 
 __attribute__((ms_abi))
-int KernelMain(FrameInfo *fi){
+int KernelMain(FrameInfo *fi, MemoryMap *memory_map){
 
 	frame_info = fi;
 	InitializeKeycode();
