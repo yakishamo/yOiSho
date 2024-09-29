@@ -12,16 +12,26 @@
 #include "editor.h"
 #include "terminal.h"
 
+#define KERNEL_STACK_SIZE 1024*1024
+
 extern FrameInfo *frame_info;
+MemoryMap *memory_map;
+int KernelMain();
+uint16_t kernel_stack[KERNEL_STACK_SIZE/2];
 
 void hlt() {
 	while(1) asm("hlt");
 }
 
 __attribute__((ms_abi))
-int KernelMain(FrameInfo *fi, MemoryMap *memory_map){
-
+void KernelEntryPoint(FrameInfo *fi, MemoryMap *memmap) {
 	frame_info = fi;
+	memory_map = memmap;
+	SwitchKernelStack(kernel_stack, KERNEL_STACK_SIZE, KernelMain);
+}
+
+int KernelMain(){
+
 	InitializeKeycode();
 
 	ClearScreen();

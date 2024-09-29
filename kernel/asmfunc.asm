@@ -13,3 +13,12 @@ IoIn8:
 	mov dx, di
 	in al, dx
 	ret
+
+global SwitchKernelStack
+SwitchKernelStack:
+	mov rsp, rdi
+	add rsp, rsi
+	call rdx
+.fin:
+	hlt
+	jmp .fin
