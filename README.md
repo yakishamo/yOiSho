@@ -2,7 +2,6 @@
 自作OSをやります.
 
 # 起動方法
-QEMUで動きます.   
+qemu, clang, lld, x86\_64-w64-mingw32-gccがあれば動きます多分.
 makeでコンパイル,   
 make runで実行できます. 
-たぶん.
