@@ -21,5 +21,6 @@ void WriteSquare(unsigned int x1, unsigned int y1, unsigned x2, unsigned y2, con
 void ClearScreen();
 void Scroll(unsigned int y);
 void Print(const char* str);
+void Print_int(const char *val_name, uint64_t a, unsigned int radix);
 
 #endif /* FRAME_H */
