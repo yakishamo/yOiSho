@@ -264,10 +264,10 @@ EFI_STATUS EFIAPI efi_main(void *image_handle __attribute((unused)),
 	Print(L"\r\n");
 
 	// exit bootservice
-	MemoryMap *memory_map = NULL;
+	UefiMemoryMap *memory_map = NULL;
 	status = gBS->AllocatePool(
 			EfiLoaderData,
-			sizeof(MemoryMap),
+			sizeof(UefiMemoryMap),
 			(VOID**)&memory_map
 			);
 	if(status != EFI_SUCCESS) {
@@ -308,7 +308,7 @@ EFI_STATUS EFIAPI efi_main(void *image_handle __attribute((unused)),
 		hlt();
 	}
 
-	typedef void (*kernel_main_t) (FrameInfo *frame_info, MemoryMap *memory_map);
+	typedef void (*kernel_main_t) (FrameInfo *frame_info, UefiMemoryMap *memory_map);
 	kernel_main_t kernel_main = (kernel_main_t)ehdr->e_entry;
 	kernel_main(fi, memory_map);
 

@@ -9,6 +9,6 @@ typedef struct {
 	UINT32 desc_ver;
 	UINTN map_size;
 	UINTN map_key;
-} MemoryMap;
+} UefiMemoryMap;
 
 #endif /* MEMORY_MAP */
