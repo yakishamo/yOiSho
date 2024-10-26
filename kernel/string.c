@@ -80,3 +80,21 @@ char *strcat(char *s1, const char *s2) {
 	strcpy(s1+s1_len, s2);
 	return s1;
 }
+
+int pow(int a, int b) {
+	int ret = 1;
+	for(int i = 0; i < b; i++) {
+		ret *= a;
+	}
+	return ret;
+}
+
+int itoa(char *str) {
+	int ret = 0;
+	int len = strlen(str);
+	char zero = '0';
+	for(int i = 0; i < len; i++) {
+		ret += pow(10,len-i-1)*(str[i]-zero);
+	}
+	return ret;
+}

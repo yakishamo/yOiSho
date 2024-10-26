@@ -8,6 +8,7 @@
 #define MEMORY_MAP_SIZE 1024*1024/8
 
 char memory_map[MEMORY_MAP_SIZE];
+int page_max = 0;
 
 EFI_MEMORY_DESCRIPTOR* GetUefiMemDesc(UefiMemoryMap *mmap, int i) {
 	uintptr_t ret = (uintptr_t)mmap->desc;
@@ -41,10 +42,14 @@ void InitMemoryMap(UefiMemoryMap *u_mmap) {
 		if(IsAvailable(desc)) {
 			int start_page = desc->PhysicalStart/(4*1024);
 			pages += desc->NumberOfPages;
+			page_max = MAX(page_max,(int)desc->PhysicalStart/(4*1024) + desc->NumberOfPages);
 			for(int j = 0; j < desc->NumberOfPages;j++) {
 				MarkAvailable(start_page + j);
 			}
 		}
 	}
-	Print_int("Available pages : ", pages, 10);
+	Print_int("Available : 0x", pages*4*1024, 16);
+	Print_int("page_max : 0x", page_max*4*1024, 16);
 }
+
+//void *AllocatePage(int page_size) {
