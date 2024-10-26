@@ -26,24 +26,25 @@ bool IsAvailable(EFI_MEMORY_DESCRIPTOR* desc) {
 		(t == EfiConventionalMemory);
 }
 
+void MarkAvailable(int i) {
+	int index = (int)i/8;
+	int bit = i%8;
+	memory_map[index] += 1 << bit;
+}
+
 void InitMemoryMap(UefiMemoryMap *u_mmap) {
 	int desc_num = u_mmap->map_size / u_mmap->desc_size;
-	int available_page = 0;
-	int unavailable_page = 0;
-	int page = 0;
+	int pages = 0;
+	memset(memory_map,0,MEMORY_MAP_SIZE);
 	for(int i = 0; i < desc_num; i++) {
 		EFI_MEMORY_DESCRIPTOR *desc = GetUefiMemDesc(u_mmap,i);
-		page += desc->NumberOfPages;
 		if(IsAvailable(desc)) {
-			Print("available");
-			available_page += desc->NumberOfPages;
-		} else {
-			Print("unavailable");
-			unavailable_page += desc->NumberOfPages;
+			int start_page = desc->PhysicalStart/(4*1024);
+			pages += desc->NumberOfPages;
+			for(int j = 0; j < desc->NumberOfPages;j++) {
+				MarkAvailable(start_page + j);
+			}
 		}
 	}
-	Print_int("desc_num : ",desc_num, 10);
-	Print_int("available : ", available_page/4/1024, 10);
-	Print_int("unavailable : ", unavailable_page/4/1024, 10);
-	Print_int("all : ", page/4/1024, 10);
+	Print_int("Available pages : ", pages, 10);
 }
