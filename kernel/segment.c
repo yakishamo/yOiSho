@@ -1,8 +1,6 @@
 #include "frame.h"
 #include "../common/def.h"
 
-
-
 union SegmentDescriptor {
 	uint64_t data;
 	struct {
