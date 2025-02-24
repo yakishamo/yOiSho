@@ -82,6 +82,7 @@ void command(char *line) {
 	}
 }
 
+void terminal() {
 	char line[TERMINAL_LINE_LEN];
 	int x = 0, y = 0;
 	int i = 0;
