@@ -69,7 +69,8 @@ void ScrollUp(unsigned int y) {
 }
 
 // print string to terminal
-void Print(const char *str) {
+// for debug
+void Printd(const char *str) {
 	int len = strlen(str);
 	WriteSquare(0,0,
     len*8+7, 15, &black);
@@ -79,7 +80,7 @@ void Print(const char *str) {
     len*8+7,15, &black);
 }
 
-void Print_int(const char *val_name, uint64_t a, unsigned int radix) {
+void Printd_int(const char *val_name, uint64_t a, unsigned int radix) {
 	char str[25] = "";
 	char *p = str;
 	unsigned int v = a;
@@ -102,6 +103,6 @@ void Print_int(const char *val_name, uint64_t a, unsigned int radix) {
 	char print_str[200] = "";
 	strcat(print_str, val_name);
 	strcat(print_str, str);
-	Print(print_str);
+	Printd(print_str);
 }
 

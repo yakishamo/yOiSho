@@ -18,28 +18,28 @@ void clear() {
 }
 
 void ls() {
-	Print(FileList());
+	Printd(FileList());
 }
 
 void touch(const char *file_name) {
 	FILE *f = NULL;
 	if(file_name == NULL) {
-		Print("filename is not specified");
+		Printd("filename is not specified");
 		return;
 	}
 	f = CreateFile(file_name, "", 0);
 	if(f == NULL) {
-		Print("failed to create");
+		Printd("failed to create");
 		return;
 	}
-	Print("created");
+	Printd("created");
 }
 
 void rm(const char *file_name) {
 	if(DeleteFile(file_name) == 0) {
-		Print("successfully deleted");
+		Printd("successfully deleted");
 	} else {
-		Print("failed to delete");
+		Printd("failed to delete");
 	}
 }
 
@@ -50,15 +50,15 @@ void echo(const TOKEN_LIST *tl) {
 		strcat(line_buf, GetToken(tl, i));
 		strcat(line_buf, " ");
 	}
-	Print(line_buf);
+	Printd(line_buf);
 }
 
 void cat(const char* file_name) {
 	const char *str = ReadFile(file_name);
 	if(str == NULL) {
-		Print("ReadFile failed");
+		Printd("ReadFile failed");
 	} else {
-		Print(str);
+		Printd(str);
 	}
 }
 
@@ -66,7 +66,7 @@ static void cpuid() {
   char buf[13];
   CpuidGetVendor(buf);
   buf[12] = '\0';
-  Print(buf);
+  Printd(buf);
 }
 
 void command(char *line) {
