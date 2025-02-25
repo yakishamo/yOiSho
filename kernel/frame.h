@@ -19,7 +19,8 @@ void WriteAscii(const char ch, unsigned int x, unsigned int y, const Color *c);
 void WriteString(const char *str, unsigned int x, unsigned int y, const Color *c);
 void WriteSquare(unsigned int x1, unsigned int y1, unsigned x2, unsigned y2, const Color *c);
 void ClearScreen();
-void Scroll(unsigned int y);
+void ScrollUp(unsigned int y);
+void ScrollDown(unsigned int y);
 void Print(const char* str);
 void Print_int(const char *val_name, uint64_t a, unsigned int radix);
 

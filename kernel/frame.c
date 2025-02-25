@@ -56,19 +56,27 @@ void ClearScreen() {
 	}
 }
 
-void Scroll(unsigned int y) {
+void ScrollDown(unsigned int y) {
 	memmove(frame_info->frame_base + frame_info->pixel_per_scanline * 4 * y,
 			frame_info->frame_base,
 			frame_info->frame_size - frame_info->pixel_per_scanline * 4 * y);
 }
 
+void ScrollUp(unsigned int y) {
+  memmove(frame_info->frame_base,
+    frame_info->frame_base + frame_info->pixel_per_scanline * 4 * y,
+    frame_info->frame_size - frame_info->pixel_per_scanline * 4 * y);
+}
+
 // print string to terminal
 void Print(const char *str) {
 	int len = strlen(str);
-	WriteSquare(0,0,len*8+7, 15, &black);
-	WriteString(str, 0,0,&white);
-	Scroll(20);
-	WriteSquare(0,0,len*8+7, 15, &black);
+	WriteSquare(0,0,
+    len*8+7, 15, &black);
+	WriteString(str, 0, 0, &white);
+	ScrollDown(20);
+	WriteSquare(0,0,
+    len*8+7,15, &black);
 }
 
 void Print_int(const char *val_name, uint64_t a, unsigned int radix) {

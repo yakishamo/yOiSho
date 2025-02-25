@@ -1,5 +1,8 @@
 #include "frame.h"
+#include "descriptor.h"
 #include "../common/def.h"
+
+typedef union SegmentDescriptor SegmentDescriptor;
 
 union SegmentDescriptor {
 	uint64_t data;
@@ -21,4 +24,10 @@ union SegmentDescriptor {
 } __attribute__((packed));
 
 void InitializeSegment() {
+  SegmentDescriptor gdt[4];
+  gdt[0].data = 0;
 
+  // 
+
+  return;
+}

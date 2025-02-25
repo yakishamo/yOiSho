@@ -22,3 +22,15 @@ SwitchKernelStack:
 .fin:
 	hlt
 	jmp .fin
+
+; CpuidGetVendor(char *str);
+global CpuidGetVendor
+CpuidGetVendor:
+  push rbx ; rbx register must be preserved by callee.
+  xor eax, eax
+  cpuid
+  mov [rdi], ebx
+  mov [rdi + 0x4], edx
+  mov [rdi + 0x8], ecx
+  pop rbx
+  ret

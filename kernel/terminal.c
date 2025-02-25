@@ -62,6 +62,13 @@ void cat(const char* file_name) {
 	}
 }
 
+static void cpuid() {
+  char buf[13];
+  CpuidGetVendor(buf);
+  buf[12] = '\0';
+  Print(buf);
+}
+
 void command(char *line) {
 	const TOKEN_LIST *tl = Tokenize(line);
 	const char *first_token = GetToken(tl, 0);
@@ -79,7 +86,9 @@ void command(char *line) {
 		cat(GetToken(tl, 1));
 	} else if(strcmp(first_token, "edit") == 0) {
 		editor(GetToken(tl, 1), 0, 0);
-	}
+	} else if(strcmp(first_token, "cpuid") == 0) {
+    cpuid();
+  }
 }
 
 void terminal() {
@@ -125,12 +134,14 @@ void terminal() {
 					i++;
 				} else if(ascii == '\n') {
 					EraseCursor(cur);
-					Scroll(20);
-					WriteSquare(0,0,frame_info->horizontal_resolution*4, 15, &black);
+					ScrollDown(20);
+					WriteSquare(0,0,
+            frame_info->horizontal_resolution*4, 15, &black);
 					command(line);
 					memset(line, '\0', TERMINAL_LINE_LEN);
-					WriteSquare(0,0,frame_info->horizontal_resolution*4, 15, &black);
-					WriteString("> ", x=0, y=0, &white);
+					WriteSquare(0,0,
+            frame_info->horizontal_resolution*4, 15, &black);
+					WriteString("> ", 0, 0, &white);
 					x = 2;
 					y = 0;
 					i = 0;
