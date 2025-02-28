@@ -74,7 +74,7 @@ void Printd(const char *str) {
 	int len = strlen(str);
 	WriteSquare(0,0,
     len*8+7, 15, &black);
-	WriteString(str, 0, 0, &white);
+	WriteString(str, 0, 0, &red);
 	ScrollDown(20);
 	WriteSquare(0,0,
     len*8+7,15, &black);

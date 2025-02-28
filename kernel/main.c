@@ -13,6 +13,7 @@
 #include "terminal.h"
 #include "memory.h"
 #include "segment.h"
+#include "window.h"
 
 #define KERNEL_STACK_SIZE 1024*1024
 
