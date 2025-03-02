@@ -43,7 +43,7 @@ int KernelMain(){
 
 	InitializeMemoryMap(u_memory_map);
 
-	terminal();
+	terminal_v2();
 
 	hlt();
 	return 0;

@@ -56,7 +56,7 @@ void InitializeMemoryMap(UefiMemoryMap *u_mmap) {
 			}
 		}
 	}
-	Printd_int("Available pages : 0x", pages, 16);
+	// Printd_int("Available pages : 0x", pages, 16);
 }
 
 // when page is not allocated, return 0
