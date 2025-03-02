@@ -12,6 +12,8 @@
 #include "editor.h"
 #include "terminal.h"
 #include "memory.h"
+#include "segment.h"
+#include "window.h"
 
 #define KERNEL_STACK_SIZE 1024*1024
 
@@ -33,13 +35,15 @@ void KernelEntryPoint(FrameInfo *fi, UefiMemoryMap *memmap) {
 
 int KernelMain(){
 
+  InitializeSegment();
+
 	InitializeKeycode();
 
 	ClearScreen();
 
-	InitMemoryMap(u_memory_map);
+	InitializeMemoryMap(u_memory_map);
 
-	terminal();
+	terminal_v2();
 
 	hlt();
 	return 0;

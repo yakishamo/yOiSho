@@ -41,7 +41,7 @@ static bool GetBit(unsigned int page) {
 	return (memory_map[index]>>bit)&1;
 }
 
-void InitMemoryMap(UefiMemoryMap *u_mmap) {
+void InitializeMemoryMap(UefiMemoryMap *u_mmap) {
 	uintptr_t desc_num = u_mmap->map_size / u_mmap->desc_size;
 	uintptr_t pages = 0;
 	memset(memory_map,0,MEMORY_MAP_SIZE);
@@ -56,7 +56,7 @@ void InitMemoryMap(UefiMemoryMap *u_mmap) {
 			}
 		}
 	}
-	Print_int("Available pages : 0x", pages, 16);
+	// Printd_int("Available pages : 0x", pages, 16);
 }
 
 // when page is not allocated, return 0
