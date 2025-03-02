@@ -16,12 +16,12 @@ extern FrameInfo *frame_info;
 // print string to terminal
 void Print(const char *str) {
 	int len = strlen(str);
-	WriteSquare(0,0,
-    len*8+7, 15, &black);
-	WriteString(str, 0, 0, &white);
-	ScrollDown(20);
-	WriteSquare(0,0,
-    len*8+7,15, &black);
+	WriteSquare(0,frame_info->vertical_resolution-21,
+    frame_info->horizontal_resolution-1, frame_info->vertical_resolution-1, &black);
+	WriteString(str, 0, frame_info->vertical_resolution-21, &white);
+	ScrollUp(20);
+  WriteSquare(0,frame_info->vertical_resolution-21,
+    frame_info->horizontal_resolution-1, frame_info->vertical_resolution-1, &black);
 }
 
 void Print_int(const char *val_name, uint64_t a, unsigned int radix) {
@@ -236,28 +236,28 @@ void terminal_v2() {
             i--;
             x--;
             WriteSquare(x * FONTSIZE_X, y * FONTSIZE_Y,
-                x*FONTSIZE_X + 7, FONTSIZE_Y*16 + 15, &black);
+                x*FONTSIZE_X + 7, y*FONTSIZE_Y + 15, &black);
             line[i] = '\0';
             CursorBack(cur);
           }
         } else if(ascii == '\n') {
           EraseCursor(cur);
           ScrollUp(20);
-          WriteSquare(0,0,
-              x_max * FONTSIZE_X, y_max * FONTSIZE_Y,
-              &black);
+          WriteSquare(0,y_max*FONTSIZE_Y,
+            x_max * FONTSIZE_X, (y_max+1)*FONTSIZE_Y,
+            &black);
           command(line);
           memset(line,'\0', TERMINAL_LINE_LEN);
           WriteString("> ", 0, y_max * FONTSIZE_Y, &white);
           x = 2;
           y = y_max;
           i = 0;
-          MoveCursor(cur, x * FONTSIZE_X, y*FONTSIZE_Y);
+          MoveCursor(cur, x*FONTSIZE_X, y*FONTSIZE_Y);
           PrintCursor(cur);
         } else if(i < TERMINAL_LINE_LEN - 1) {
           CursorNext(cur);
           line[i] = ascii;
-          WriteAscii(ascii, x * FONTSIZE_X, y * FONTSIZE_Y, &white);
+          WriteAscii(ascii, x*FONTSIZE_X, y*FONTSIZE_Y, &white);
           x++;
           i++;
         }
