@@ -43,6 +43,15 @@ struct InterruptDescriptor {
   uint32_t reserved;
 } __attribute__((packed));
 
+struct InterruptFrame {
+  uintptr_t rip;
+  uintptr_t cs;
+  uintptr_t flag;
+  uintptr_t rsp;
+  uintptr_t ss;
+} __attribute__((packed));
+
 void SetIDTEntry(struct InterruptDescriptor *desc, uintptr_t handler);
+void SetupInterrupt();
 
 #endif /* INTERRUPT_H */

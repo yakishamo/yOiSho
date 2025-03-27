@@ -16,6 +16,7 @@
 #include "window.h"
 #include "asmfunc.h"
 #include "paging.h"
+#include "interrupt.h"
 
 #define KERNEL_STACK_SIZE 1024*1024
 
@@ -36,6 +37,8 @@ void KernelEntryPoint(FrameInfo *fi, UefiMemoryMap *memmap) {
 }
 
 int KernelMain(){
+
+  SetupInterrupt();
 
   InitializeSegment();
   const uint16_t kernel_cs = 1 << 3;

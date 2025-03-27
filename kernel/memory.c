@@ -51,8 +51,8 @@ void InitializeMemoryMap(UefiMemoryMap *u_mmap) {
 		EFI_MEMORY_DESCRIPTOR *desc = GetUefiMemDesc(u_mmap,i);
 		page_max = MAX(page_max,(uintptr_t)desc->PhysicalStart/(4*1024) + desc->NumberOfPages);
 		if(IsAvailable(desc)) {
-      Print_int("i : 0x", i, 16);
-      Print_int("desc : 0x", (uint64_t)desc, 16);
+//      Print_int("i : 0x", i, 16);
+//      Print_int("desc : 0x", (uint64_t)desc, 16);
 			uintptr_t start_page = desc->PhysicalStart/(4*1024);
 			pages += desc->NumberOfPages;
 			for(uintptr_t j = 0; j < desc->NumberOfPages;j++) {
@@ -68,7 +68,6 @@ void InitializeMemoryMap(UefiMemoryMap *u_mmap) {
         }
         */
 			}
-      while(1) asm("hlt");
 		}
 	}
 	Print_int("Available pages : 0x", pages, 16);

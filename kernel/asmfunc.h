@@ -12,5 +12,7 @@ void SetCSSS(uint16_t cs, uint16_t ss);
 uint64_t GetCS();
 void LoadGDT(uint16_t limit, uint64_t offset);
 void SetCR3(uint64_t value);
+void LoadIDT(uint16_t limit, uint64_t offset);
+void DebugHlt(uint64_t value1, uint64_t value2, uint64_t value3);
 
 #endif /* ASMFUNC_H */

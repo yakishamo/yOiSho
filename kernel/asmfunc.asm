@@ -84,3 +84,25 @@ SetCR3:
   mov cr3, rdi
   ret
 
+; void LoadIDT(uint16_t limit, uint64_t offset)
+global LoadIDT
+LoadIDT:
+  push rbp
+  mov rbp, rsp
+  sub rsp, 10
+  mov [rsp] ,di ; limit
+  mov [rsp+2], rsi ; offset
+  lidt [rsp]
+  mov rsp, rbp
+  pop rbp
+  ret
+
+; void DebugHlt(uint64_t value1, uint64_t value2, uint64_t value3)
+global DebugHlt
+DebugHlt:
+  mov rax, rdi
+  mov rbx, rsi
+  mov rcx, rdx
+.loop:
+  hlt
+  jmp .loop
