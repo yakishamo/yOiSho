@@ -14,6 +14,8 @@
 #include "memory.h"
 #include "segment.h"
 #include "window.h"
+#include "asmfunc.h"
+#include "paging.h"
 
 #define KERNEL_STACK_SIZE 1024*1024
 
@@ -36,6 +38,13 @@ void KernelEntryPoint(FrameInfo *fi, UefiMemoryMap *memmap) {
 int KernelMain(){
 
   InitializeSegment();
+  const uint16_t kernel_cs = 1 << 3;
+  const uint16_t kernel_ss = 2 << 3;
+  SetDSAll(0);
+
+  SetCSSS(kernel_cs, kernel_ss);
+
+  SetupIdentityPaging();
 
 	InitializeKeycode();
 
