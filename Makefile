@@ -16,7 +16,8 @@ run:
 		-drive if=pflash,format=raw,file=./ovmf/OVMF_CODE.fd,readonly=on \
 		-drive if=pflash,format=raw,file=./ovmf/OVMF_VARS.fd \
 		-drive if=ide,format=raw,file=fat:rw:fs,index=0,media=disk \
-		-monitor stdio
+		-monitor stdio \
+    -d int
 
 init:
 	mkdir -p fs/EFI/BOOT
