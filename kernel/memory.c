@@ -10,6 +10,8 @@
 // 0 : not available
 #define MEMORY_MAP_SIZE 1024*1024/8 * 4
 
+// 1 : used
+// 0 : free
 char memory_map[MEMORY_MAP_SIZE];
 int page_max = 0;
 
@@ -71,7 +73,7 @@ uint64_t AllocatePage(uint64_t page_size) {
 	uint64_t page = 1;
 	uint64_t i = 0;
 	while((i < page_size) && (page < MEMORY_MAP_SIZE)) {
-		if(GetBit(page)) {
+		if(!GetBit(page)) {
 			i++;
 		} else {
 			i = 0;
@@ -79,9 +81,9 @@ uint64_t AllocatePage(uint64_t page_size) {
 		page++;
 	}
 	if(i == page_size) {
-		uintptr_t ret_page = page - page_size;
+		uintptr_t ret_page = page - page_size - 1;
 		for(int j = 0; j < page_size; j++) {
-			SetBit(ret_page+i,0);
+			SetBit(ret_page+i,1);
 		}
 		return ret_page;
 	}

@@ -8,6 +8,7 @@
 #include "string.h"
 #include "frame.h"
 #include "cursor.h"
+#include "memory.h"
 
 #define TERMINAL_LINE_LEN 0x100
 
@@ -107,6 +108,11 @@ static void cpuid() {
   Print(buf);
 }
 
+static void allocate() {
+  uint64_t addr = AllocatePage(1);
+  Print_int("addr : 0x", addr, 16);
+}
+
 void command(char *line) {
 	const TOKEN_LIST *tl = Tokenize(line);
 	const char *first_token = GetToken(tl, 0);
@@ -126,6 +132,8 @@ void command(char *line) {
 		editor(GetToken(tl, 1), 0, 0);
 	} else if(strcmp(first_token, "cpuid") == 0) {
     cpuid();
+  } else if(strcmp(first_token, "allocate") == 0) {
+    allocate();
   }
 }
 
