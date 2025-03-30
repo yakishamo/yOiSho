@@ -17,7 +17,8 @@ run:
 		-drive if=pflash,format=raw,file=./ovmf/OVMF_VARS.fd \
 		-drive if=ide,format=raw,file=fat:rw:fs,index=0,media=disk \
 		-monitor stdio \
-    -d int
+    -d int \
+    -D qemu_debug.log
 
 init:
 	mkdir -p fs/EFI/BOOT

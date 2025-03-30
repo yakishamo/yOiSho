@@ -8,7 +8,7 @@
 
 // 1 : available
 // 0 : not available
-#define MEMORY_MAP_SIZE 1024*1024/8
+#define MEMORY_MAP_SIZE 1024*1024/8 * 4
 
 char memory_map[MEMORY_MAP_SIZE];
 int page_max = 0;
@@ -33,6 +33,11 @@ bool IsAvailable(EFI_MEMORY_DESCRIPTOR* desc) {
 void SetBit(int page, int bit) {
 	int index = (int)page/8;
 	int bit_index = page%8;
+  if(index >= MEMORY_MAP_SIZE) {
+    WriteString("Over", 0, 16, &red);
+    WriteInteger("Page : 0x", page, 16, 0, 32, &red);
+    while(1) asm("hlt");
+  }
 	memory_map[index] |= (bit == 0 ? 0 : 1) << bit_index;
 }
 
@@ -51,23 +56,11 @@ void InitializeMemoryMap(UefiMemoryMap *u_mmap) {
 		EFI_MEMORY_DESCRIPTOR *desc = GetUefiMemDesc(u_mmap,i);
 		page_max = MAX(page_max,(uintptr_t)desc->PhysicalStart/(4*1024) + desc->NumberOfPages);
 		if(IsAvailable(desc)) {
-//      Print_int("i : 0x", i, 16);
-//      Print_int("desc : 0x", (uint64_t)desc, 16);
 			uintptr_t start_page = desc->PhysicalStart/(4*1024);
 			pages += desc->NumberOfPages;
 			for(uintptr_t j = 0; j < desc->NumberOfPages;j++) {
 				SetBit(start_page + j, 1);
-        /*
-        if(i == 80) {
-          Print_int("j : ", j, 10);
-          if(j == 682) {
-            Print_int("NumberOfPages : ", desc->NumberOfPages, 10);
-            while(1) asm("hlt");
-          }
-          // j == 683で落ちる
-        }
-        */
-			}
+      }
 		}
 	}
 	Print_int("Available pages : 0x", pages, 16);

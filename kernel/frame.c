@@ -42,6 +42,34 @@ void WriteString(const char *str, unsigned int x, unsigned int y, const Color *c
 	}
 }
 
+void WriteInteger(const char *val_name, uint64_t a, unsigned int radix, 
+    unsigned int x, unsigned int y, const Color *c) {
+	char str[25] = "";
+	char *p = str;
+	unsigned int v = a;
+	int n = 1;
+	while(v >= radix) {
+		v/=radix;
+		n++;
+	}
+	p = str + n;
+	v = a;
+	*p = 0;
+	do {
+		p--;
+		*p = v % radix + (char)'0';
+		if(*p > (char)'9') {
+			*p = v % radix - 10 + 'A';
+		}
+		v /= radix;
+	} while(p != str);
+	char print_str[200] = "";
+	strcat(print_str, val_name);
+	strcat(print_str, str);
+	WriteString(print_str, x, y, c);
+}
+
+
 void WriteSquare(unsigned int x1, unsigned int y1, unsigned x2, unsigned y2, const Color *c) {
 	for(int j = y1; j <= y2; j++) {
 		for(int i = x1; i <= x2; i++) {
