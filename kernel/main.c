@@ -37,15 +37,14 @@ void KernelEntryPoint(FrameInfo *fi, UefiMemoryMap *memmap) {
 }
 
 int KernelMain(){
-
-  SetupInterrupt();
-
   InitializeSegment();
   const uint16_t kernel_cs = 1 << 3;
   const uint16_t kernel_ss = 2 << 3;
   SetDSAll(0);
 
   SetCSSS(kernel_cs, kernel_ss);
+
+  SetupInterrupt();
 
   SetupIdentityPaging();
 

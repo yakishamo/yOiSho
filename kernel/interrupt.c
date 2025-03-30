@@ -13,7 +13,13 @@
     DebugHlt(frame->rip, frame->rsp, frame->flag); \
     NotifyEndOfInterrupt(); \
   }
-
+/* 
+#define DEFINE_DEFAULT_INT(interrupt_name) \
+  __attribute__((interrupt)) \
+  static void (interrupt_name)(struct InterruptFrame *frame) { \
+    while(1) asm("hlt"); \
+  }
+*/
 struct InterruptDescriptor idt[256];
 
 void SetIDTEntry(struct InterruptDescriptor *desc, uintptr_t handler) {

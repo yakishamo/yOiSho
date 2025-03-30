@@ -6,3 +6,4 @@ ovmf
 .DS_Store
 *.swp
 *.EFI
+qemu_debug.log
