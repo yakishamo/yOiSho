@@ -17,6 +17,7 @@
 #include "asmfunc.h"
 #include "paging.h"
 #include "interrupt.h"
+#include "kmalloc.h"
 
 #define KERNEL_STACK_SIZE 1024*1024
 
@@ -44,15 +45,25 @@ int KernelMain(){
 
   SetCSSS(kernel_cs, kernel_ss);
 
-  SetupInterrupt();
-
   SetupIdentityPaging();
 
+  SetupInterrupt();
+  
 	InitializeKeycode();
 
 	ClearScreen();
 
 	InitializeMemoryMap(u_memory_map);
+
+  uint64_t available_pages = GetAvailablePages();
+  Print_int("available_pages : 0x", available_pages*0x1000, 16);
+  uint64_t page_max = GetPageMax();
+  Print_int("page_max : 0x", page_max, 16);
+
+  InitializeKernelHeap();
+
+  uint64_t p = AllocatePage(1);
+  Print_int("p : 0x", p, 16);
 
 	terminal_v2();
 
