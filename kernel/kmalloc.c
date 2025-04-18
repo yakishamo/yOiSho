@@ -11,7 +11,6 @@ typedef union ChunkFlag ChunkFlag;
 
 static uint8_t *kernel_heap = NULL;
 static ChunkHead *chunk_root = NULL;
-static uint64_t tail_memory_size = KERNEL_HEAP_FRAMES*0x1000;
 
 union ChunkFlag {
   uint64_t data;
@@ -23,18 +22,17 @@ union ChunkFlag {
 
 struct ChunkHead {
   char magic[16];
-  ChunkHead *back;
-  ChunkHead *front;
+  ChunkHead *next;
   uint64_t size;
   ChunkFlag flags;
   uint8_t chunk[];
 } __attribute__((packed));
 
-static void InitChunk(ChunkHead *ch, ChunkHead *back, uint64_t size) {
-  strcpy(ch->magic, KMALLOC_CHUNK_HEAD);
-  ch->back = back;
-  ch->front = NULL;
+static void InitChunk(ChunkHead *ch, ChunkHead *next, uint64_t size, uint64_t available) {
+  strcpy(ch->magic, KMALLOC_CHUNK_MAGIC);
+  ch->next = next;
   ch->size = size;
+  ch->flags.bits.available = available & 1;
   memset(&ch->chunk, 0, size);
 }
 
@@ -46,14 +44,46 @@ void InitializeKernelHeap(){
   Print("kernel heap allocated.");
   Print_int("kernel_heap : 0x", (uintptr_t)kernel_heap, 16);
   chunk_root = (ChunkHead*)kernel_heap;
-  tail_memory_size -= sizeof(ChunkHead); 
-  InitChunk(chunk_root, NULL, tail_memory_size);
-  chunk_root->flags.bits.available = 1;
+  InitChunk(chunk_root, NULL, KERNEL_HEAP_FRAMES * 0x100 - sizeof(ChunkHead), 1);
 }
 
 void *kmalloc(uint64_t size) {
   ChunkHead *iter = chunk_root;
-  ChunkHead *iter_back = NULL;
+  if(size%8 != 0) {
+    size = size - size%8 + 8;
+  }
   for(;;) {
-    if(iter->flags.bits.available == 1 && iter->size >= size) {
+    if(iter == NULL) {
+      return NULL;
+    } else if(iter->flags.bits.available == 1 && iter->size >= size + sizeof(ChunkHead)) {
+      ChunkHead *new = (ChunkHead*)(((uintptr_t)iter) + sizeof(ChunkHead) + size);
+      InitChunk(new, iter->next, iter->size - sizeof(ChunkHead) - size, 1);
+      InitChunk(iter, new, size, 0);
+      return (void*)iter->chunk;
+    } else {
+      iter = iter->next;
+    }
+  }
+}
 
+void kfree(void *ptr) {
+  ChunkHead *ch = (ChunkHead*)(((uintptr_t)ptr) - sizeof(ChunkHead));
+  if(strcmp(ch->magic, KMALLOC_CHUNK_MAGIC) != 0) {
+    Print("kmalloc failed.");
+  }
+  ch->flags.bits.available = 1;
+  Print("kmalloc success.");
+}
+
+void DumpHeap() {
+  ChunkHead *iter = chunk_root;
+  uint64_t size = 0;
+  while(iter != NULL) {
+    Print_int("addr : 0x", (uint64_t)iter->chunk, 16);
+    Print_int("size : 0x", iter->size, 16);
+    Print_int("available : ", iter->flags.bits.available, 10);
+    size += iter->size;
+    iter = iter->next;
+  }
+  Print_int("all size : 0x", size, 16);
+}
