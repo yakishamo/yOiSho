@@ -45,6 +45,7 @@ void InitializeKernelHeap(){
   Print_int("kernel_heap : 0x", (uintptr_t)kernel_heap, 16);
   chunk_root = (ChunkHead*)kernel_heap;
   InitChunk(chunk_root, NULL, KERNEL_HEAP_FRAMES * 0x100 - sizeof(ChunkHead), 1);
+  Print_int("sizeof(ChunkHead) : 0x", sizeof(ChunkHead), 16);
 }
 
 void *kmalloc(uint64_t size) {
@@ -55,11 +56,35 @@ void *kmalloc(uint64_t size) {
   for(;;) {
     if(iter == NULL) {
       return NULL;
-    } else if(iter->flags.bits.available == 1 && iter->size >= size + sizeof(ChunkHead)) {
-      ChunkHead *new = (ChunkHead*)(((uintptr_t)iter) + sizeof(ChunkHead) + size);
-      InitChunk(new, iter->next, iter->size - sizeof(ChunkHead) - size, 1);
-      InitChunk(iter, new, size, 0);
-      return (void*)iter->chunk;
+    }
+    if(iter->flags.bits.available == 1) {
+      if(iter->size >= size + sizeof(ChunkHead)) {
+        ChunkHead *new = (ChunkHead*)(((uintptr_t)iter) + sizeof(ChunkHead) + size);
+        InitChunk(new, iter->next, iter->size - sizeof(ChunkHead) - size, 1);
+        InitChunk(iter, new, size, 0);
+        return (void*)iter->chunk;
+      } else {
+        ChunkHead *iter2 = iter->next;
+        uint64_t available_size = iter->size;
+        for(;;) {
+          if(iter2 == NULL) {
+            return NULL;
+          }
+          available_size += iter2->size;
+          if(iter2->flags.bits.available == 0) {
+            iter = iter2->next;
+            break;
+          } else if(available_size < size + sizeof(ChunkHead)) {
+            available_size += sizeof(ChunkHead);
+            iter2 = iter2->next;
+          } else {
+            ChunkHead *new = (ChunkHead*)(((uintptr_t)iter) + sizeof(ChunkHead) + size);
+            InitChunk(new, iter2->next, available_size - sizeof(ChunkHead) - size, 1);
+            InitChunk(iter, new, size, 0);
+            return (void*)iter->chunk;
+          }
+        }
+      }
     } else {
       iter = iter->next;
     }
@@ -69,7 +94,8 @@ void *kmalloc(uint64_t size) {
 void kfree(void *ptr) {
   ChunkHead *ch = (ChunkHead*)(((uintptr_t)ptr) - sizeof(ChunkHead));
   if(strcmp(ch->magic, KMALLOC_CHUNK_MAGIC) != 0) {
-    Print("kmalloc failed.");
+    Print("kfree failed.");
+    asm("int3");
   }
   ch->flags.bits.available = 1;
 }
@@ -79,8 +105,8 @@ void DumpHeap() {
   uint64_t size = 0;
   while(iter != NULL) {
     Print_int("addr : 0x", (uint64_t)iter->chunk, 16);
-    Print_int("size : 0x", iter->size, 16);
-    Print_int("available : ", iter->flags.bits.available, 10);
+    Print_int("  size : 0x", iter->size, 16);
+    Print_int("  available : ", iter->flags.bits.available, 10);
     size += iter->size;
     iter = iter->next;
   }
