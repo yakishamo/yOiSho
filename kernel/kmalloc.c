@@ -98,7 +98,6 @@ void kfree(void *ptr) {
     asm("int3");
   }
   ch->flags.bits.available = 1;
-  Print("kfree success.");
 }
 
 void DumpHeap() {
