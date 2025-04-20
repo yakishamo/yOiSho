@@ -57,6 +57,26 @@ int KernelMain(){
 
   InitializeKernelHeap();
 
+  int *p = kmalloc(8);
+  int *q = kmalloc(16);
+  Print_int("p : 0x", (uint64_t)p, 16);
+  Print_int("q : 0x", (uint64_t)q, 16);
+
+  kfree(p);
+  kfree(q);
+  p = kmalloc(0x100);
+  q = kmalloc(16);
+  Print_int("p : 0x", (uint64_t)p, 16);
+  Print_int("q : 0x", (uint64_t)q, 16);
+  kfree(p);
+  kfree(q);
+  p = kmalloc(0x9);
+  q = kmalloc(0x80);
+  int *r = kmalloc(0x1);
+  Print_int("p : 0x", (uint64_t)p, 16);
+  Print_int("q : 0x", (uint64_t)q, 16);
+  Print_int("r : 0x", (uint64_t)r, 16);
+
 	terminal_v2();
 
 	hlt();
