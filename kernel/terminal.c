@@ -81,7 +81,7 @@ void rm(const char *file_name) {
 	}
 }
 
-void echo(const TOKEN_LIST *tl) {
+void echo(TOKEN_LIST *tl) {
 	char line_buf[TERMINAL_LINE_LEN];
 	memset(line_buf, 0, TERMINAL_LINE_LEN);
 	for(int i = 1; i < GetTokenNum(tl); i++) {
@@ -108,8 +108,8 @@ static void cpuid() {
 }
 
 void command(char *line) {
-	const TOKEN_LIST *tl = Tokenize(line);
-	const char *first_token = GetToken(tl, 0);
+	TOKEN_LIST *tl = Tokenize(line);
+	char *first_token = GetToken(tl, 0);
 	if(strcmp(first_token, "echo") == 0) {
 		echo(tl);
 	}	else if(strcmp(first_token, "clear") == 0 ) {
@@ -127,6 +127,7 @@ void command(char *line) {
 	} else if(strcmp(first_token, "cpuid") == 0) {
     cpuid();
   }
+  FreeTokenList(tl);
 }
 
 // fontsize x:8, y:20

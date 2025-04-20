@@ -72,7 +72,6 @@ void kfree(void *ptr) {
     Print("kmalloc failed.");
   }
   ch->flags.bits.available = 1;
-  Print("kmalloc success.");
 }
 
 void DumpHeap() {
