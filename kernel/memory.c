@@ -6,8 +6,6 @@
 #include "frame.h"
 #include "terminal.h"
 
-// 1 : available
-// 0 : not available
 #define MEMORY_MAP_SIZE 1024*1024/8 * 4
 
 // 1 : used
@@ -64,10 +62,6 @@ void InitializeMemoryMap(UefiMemoryMap *u_mmap) {
 		if(IsAvailable(desc)) {
 	    page_max = MAX(page_max,(uintptr_t)desc->PhysicalStart/0x1000 + desc->NumberOfPages);
 			uintptr_t start_page = desc->PhysicalStart/0x1000;
-      //Print_int("start_page : 0x", start_page, 16);
-      //Print_int("desc->Type : ", desc->Type, 10);
-      //Print_int("desc->NumberOfPages : 0x", desc->NumberOfPages, 16);
-      //Print_int("desc->PhysicalStart : 0x", desc->PhysicalStart, 16);
 			pages += desc->NumberOfPages;
 			for(uintptr_t j = 0; j < desc->NumberOfPages;j++) {
 				SetBit(start_page + j, 0);
