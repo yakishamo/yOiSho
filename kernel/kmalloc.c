@@ -45,7 +45,6 @@ void InitializeKernelHeap(){
   Print_int("kernel_heap : 0x", (uintptr_t)kernel_heap, 16);
   chunk_root = (ChunkHead*)kernel_heap;
   InitChunk(chunk_root, NULL, KERNEL_HEAP_FRAMES * 0x100 - sizeof(ChunkHead), 1);
-  Print_int("sizeof(ChunkHead) : 0x", sizeof(ChunkHead), 16);
 }
 
 void *kmalloc(uint64_t size) {

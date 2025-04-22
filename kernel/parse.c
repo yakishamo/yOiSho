@@ -29,7 +29,6 @@ TOKEN_LIST *Tokenize(const char *str) {
 		while(*p2 != '\0' && *p2 != ' ') p2++;
 		int len = (uintptr_t)p2 - (uintptr_t)p1;
     token->next = kmalloc(sizeof(TOKEN_LIST) + len + 1);
-    Print_int("token->next : 0x", (uint64_t)token->next, 16);
     token->next->next = NULL;
 		strncpy(token->next->str, p1, len);
 		token->next->str[len] = '\0';
@@ -44,6 +43,7 @@ char *GetToken(TOKEN_LIST *token, int i) {
     if(token == NULL) return NULL;
     token = token->next;
   }
+  if(token == NULL) return NULL;
   return token->str;
 }
 
@@ -62,5 +62,13 @@ void FreeTokenList(TOKEN_LIST *token) {
     next = token->next;
     kfree(token);
     token = next;
+  }
+}
+
+void DumpTokenList(TOKEN_LIST *token) {
+  if(token == NULL) return;
+  token = token->next;
+  while(token != NULL) {
+    token = token->next;
   }
 }
