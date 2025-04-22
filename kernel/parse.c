@@ -29,7 +29,6 @@ TOKEN_LIST *Tokenize(const char *str) {
 		while(*p2 != '\0' && *p2 != ' ') p2++;
 		int len = (uintptr_t)p2 - (uintptr_t)p1;
     token->next = kmalloc(sizeof(TOKEN_LIST) + len + 1);
-    Print_int("token->next : 0x", (uint64_t)token->next, 16);
     token->next->next = NULL;
 		strncpy(token->next->str, p1, len);
 		token->next->str[len] = '\0';
