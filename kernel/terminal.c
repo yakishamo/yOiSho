@@ -51,16 +51,17 @@ void Print_int(const char *val_name, uint64_t a, unsigned int radix) {
 }
 
 
-void clear() {
+void clear(TOKEN_LIST *tl) {
 	ClearScreen();
 }
 
-void ls() {
+void ls(TOKEN_LIST *tl) {
 	Print(FileList());
 }
 
-void touch(const char *file_name) {
+void touch(TOKEN_LIST *tl) {
 	FILE *f = NULL;
+  char *file_name = GetToken(tl, 1);
 	if(file_name == NULL) {
 		Print("filename is not specified");
 		return;
@@ -73,7 +74,12 @@ void touch(const char *file_name) {
 	Print("created");
 }
 
-void rm(const char *file_name) {
+void rm(TOKEN_LIST *tl) {
+  char *file_name = GetToken(tl, 1);
+  if(file_name == NULL) {
+    Print("\"rm\" need 1 arg");
+    return;
+  }
 	if(DeleteFile(file_name) == 0) {
 		Print("successfully deleted");
 	} else {
@@ -84,14 +90,19 @@ void rm(const char *file_name) {
 void echo(TOKEN_LIST *tl) {
 	char line_buf[TERMINAL_LINE_LEN];
 	memset(line_buf, 0, TERMINAL_LINE_LEN);
-	for(int i = 1; i < GetTokenNum(tl); i++) {
+  int token_num = GetTokenNum(tl);
+	for(int i = 1; i < token_num; i++) {
 		strcat(line_buf, GetToken(tl, i));
 		strcat(line_buf, " ");
 	}
 	Print(line_buf);
 }
 
-void cat(const char* file_name) {
+void cat(TOKEN_LIST *tl) {
+  char *file_name = GetToken(tl, 1);
+  if(file_name == NULL) {
+    return;
+  }
 	const char *str = ReadFile(file_name);
 	if(str == NULL) {
 		Print("ReadFile failed");
@@ -100,7 +111,7 @@ void cat(const char* file_name) {
 	}
 }
 
-static void cpuid() {
+static void cpuid(TOKEN_LIST *tl) {
   char buf[13];
   CpuidGetVendor(buf);
   buf[12] = '\0';
@@ -109,23 +120,29 @@ static void cpuid() {
 
 void command(char *line) {
 	TOKEN_LIST *tl = Tokenize(line);
+  DumpTokenList(tl);
 	char *first_token = GetToken(tl, 0);
+  if(first_token == NULL) {
+    FreeTokenList(tl);
+    return;
+  }
+
 	if(strcmp(first_token, "echo") == 0) {
 		echo(tl);
 	}	else if(strcmp(first_token, "clear") == 0 ) {
-		clear();
+		clear(tl);
 	} else if(strcmp(first_token, "ls") == 0 ) {
-		ls();
+		ls(tl);
 	} else if(strcmp(first_token, "touch") == 0) {
-		touch(GetToken(tl, 1));
+		touch(tl);
 	} else if(strcmp(first_token, "rm") == 0) {
-		rm(GetToken(tl,1));
+		rm(tl);
 	} else if(strcmp(first_token, "cat") == 0) {
-		cat(GetToken(tl, 1));
+		cat(tl);
 	} else if(strcmp(first_token, "edit") == 0) {
 		editor(GetToken(tl, 1), 0, 0);
 	} else if(strcmp(first_token, "cpuid") == 0) {
-    cpuid();
+    cpuid(tl);
   }
   FreeTokenList(tl);
 }

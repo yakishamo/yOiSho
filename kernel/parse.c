@@ -43,6 +43,7 @@ char *GetToken(TOKEN_LIST *token, int i) {
     if(token == NULL) return NULL;
     token = token->next;
   }
+  if(token == NULL) return NULL;
   return token->str;
 }
 
@@ -61,5 +62,13 @@ void FreeTokenList(TOKEN_LIST *token) {
     next = token->next;
     kfree(token);
     token = next;
+  }
+}
+
+void DumpTokenList(TOKEN_LIST *token) {
+  if(token == NULL) return;
+  token = token->next;
+  while(token != NULL) {
+    token = token->next;
   }
 }
