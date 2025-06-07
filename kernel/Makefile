@@ -1,6 +1,6 @@
 TARGET = kernel.elf
 OBJS = asmfunc.o main.o hankaku.o frame.o string.o keyboard.o file.o cursor.o parse.o editor.o \
-			 terminal.o memory.o segment.o paging.o interrupt.o kmalloc.o
+			 terminal.o memory.o segment.o paging.o interrupt.o kmalloc.o pic.o queue.o
 
 CC=clang
 CXXFLAGS += -O0 -Wall -g --target=x86_64-elf -ffreestanding -mno-red-zone \

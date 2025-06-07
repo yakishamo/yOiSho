@@ -3,6 +3,7 @@
 #include "asmfunc.h"
 #include "frame.h"
 #include "string.h"
+#include "queue.h"
 
 #define DEFINE_DEFAULT_INT(interrupt_name) \
   __attribute__((interrupt)) \
@@ -13,14 +14,9 @@
     DebugHlt(frame->rip, frame->rsp, frame->flag); \
     NotifyEndOfInterrupt(); \
   }
-/* 
-#define DEFINE_DEFAULT_INT(interrupt_name) \
-  __attribute__((interrupt)) \
-  static void (interrupt_name)(struct InterruptFrame *frame) { \
-    while(1) asm("hlt"); \
-  }
-*/
+
 struct InterruptDescriptor idt[256];
+QUEUE interrupt_message_queue;
 
 void SetIDTEntry(struct InterruptDescriptor *desc, uintptr_t handler) {
   desc->offset_low = (uint16_t)handler & 0xffff;
@@ -60,6 +56,10 @@ DEFINE_DEFAULT_INT(StackSegmentFault);
 DEFINE_DEFAULT_INT(GeneralProtection);
 DEFINE_DEFAULT_INT(PageFault);
 
+__attribute__((interrupt))
+static void KeyboardInterrupt(InterruptFrame *frame) {
+
+
 void SetupInterrupt() {
   SetIDTEntry(&idt[INT_DIVIDE_BY_ZERO], (uintptr_t)DivideByZero);
   SetIDTEntry(&idt[INT_NMI_INTERRUPT], (uintptr_t)NmiInterrupt);
@@ -74,6 +74,8 @@ void SetupInterrupt() {
   SetIDTEntry(&idt[INT_STACK_SEGMENT_FAULT], (uintptr_t)StackSegmentFault);
   SetIDTEntry(&idt[INT_GENERAL_PROTECTION_FAULT], (uintptr_t)GeneralProtection);
   SetIDTEntry(&idt[INT_PAGE_FAULT], (uintptr_t)PageFault);
+  SetIDTEntry(&idt[INT_KEYBOARD], (uintptr_t)KeyboardInterrupt);
   LoadIDT(255, (uint64_t)idt);
+  asm("sti");
   return;
 }

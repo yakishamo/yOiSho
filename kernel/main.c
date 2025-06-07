@@ -18,6 +18,7 @@
 #include "paging.h"
 #include "interrupt.h"
 #include "kmalloc.h"
+#include "pic.h"
 
 #define KERNEL_STACK_SIZE 1024*1024
 
@@ -48,6 +49,7 @@ int KernelMain(){
   SetupIdentityPaging();
 
   SetupInterrupt();
+  InitializePic();
   
 	InitializeKeycode();
 
