@@ -1,8 +1,8 @@
 #ifndef INTERRUPT_H
 #define INTERRUPT_H
 
-#include "../common/types64.h"
-#include "queue.h"
+#include "../../common/types64.h"
+#include "../queue.h"
 
 #define INT_DIVIDE_BY_ZERO                0x00
 #define INT_NMI_INTERRUPT                 0x02
@@ -53,23 +53,13 @@ struct InterruptFrame {
   uintptr_t ss;
 } __attribute__((packed));
 
+typedef struct InterruptFrame InterruptFrame;
+
 enum InterruptType {
   IntKeyboard,
 };
 
-struct Q_InterruptMessage {
-  QUEUE_ITEM queue_item;
-  enum InterruptType;
-  union {
-    struct {
-      char ascii;
-    } keyboard;
-  };
-};
-
-typedef struct Q_InterruptMessage Q_InterruptMessage;
-
-extern QUEUE interrrupt_message_queue;
+typedef enum InterruptType InterruptType;
 
 void SetIDTEntry(struct InterruptDescriptor *desc, uintptr_t handler);
 void SetupInterrupt();

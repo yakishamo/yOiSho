@@ -1,14 +1,6 @@
 #include "queue.h"
 #include "../common/types64.h"
 
-struct QUEUE_ITEM {
-  QUEUE_ITEM *next;
-};
-
-struct QUEUE {
-  QUEUE_ITEM *item;
-};
-
 static QUEUE_ITEM *GetQueueEnd(QUEUE *queue) {
   if(queue == NULL) return NULL;
   if(queue->item == NULL) return NULL;

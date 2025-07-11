@@ -16,7 +16,7 @@
 #include "window.h"
 #include "asmfunc.h"
 #include "paging.h"
-#include "interrupt.h"
+#include "interrupt/interrupt.h"
 #include "kmalloc.h"
 #include "pic.h"
 

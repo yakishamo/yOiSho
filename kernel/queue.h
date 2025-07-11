@@ -6,6 +6,14 @@
 typedef struct QUEUE QUEUE;
 typedef struct QUEUE_ITEM QUEUE_ITEM;
 
+struct QUEUE_ITEM {
+  QUEUE_ITEM *next;
+};
+
+struct QUEUE {
+  QUEUE_ITEM *item;
+};
+
 QUEUE *PushQueue(QUEUE *queue, QUEUE_ITEM *new);
 QUEUE_ITEM *PopQueue(QUEUE *queue);
 uint64_t GetQueueSize(QUEUE *queue);

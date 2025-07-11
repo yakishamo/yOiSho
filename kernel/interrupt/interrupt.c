@@ -1,13 +1,14 @@
-#include "../common/types64.h"
+#include "../../common/types64.h"
+#include "../asmfunc.h"
+#include "../frame.h"
+#include "../string.h"
+
 #include "interrupt.h"
-#include "asmfunc.h"
-#include "frame.h"
-#include "string.h"
-#include "queue.h"
+#include "message.h"
 
 #define DEFINE_DEFAULT_INT(interrupt_name) \
   __attribute__((interrupt)) \
-  static void (interrupt_name)(struct InterruptFrame *frame) { \
+  static void (interrupt_name)(InterruptFrame *frame) { \
     char *str = #interrupt_name ; \
     WriteSquare(0,0,8*100,20,&red); \
     WriteString(str, 0,0, &white); \
@@ -16,7 +17,6 @@
   }
 
 struct InterruptDescriptor idt[256];
-QUEUE interrupt_message_queue;
 
 void SetIDTEntry(struct InterruptDescriptor *desc, uintptr_t handler) {
   desc->offset_low = (uint16_t)handler & 0xffff;
@@ -56,11 +56,16 @@ DEFINE_DEFAULT_INT(StackSegmentFault);
 DEFINE_DEFAULT_INT(GeneralProtection);
 DEFINE_DEFAULT_INT(PageFault);
 
+// DEFINE_DEFAULT_INT(KeyboardInterrupt);
 __attribute__((interrupt))
 static void KeyboardInterrupt(InterruptFrame *frame) {
+  NotifyEndOfInterrupt();
+}
 
-
+IMQueue message_queue;
+static IM im_queue_buf[IMQUEUE_MAX];
 void SetupInterrupt() {
+  IMQueueInit(&message_queue, im_queue_buf, IMQUEUE_MAX);
   SetIDTEntry(&idt[INT_DIVIDE_BY_ZERO], (uintptr_t)DivideByZero);
   SetIDTEntry(&idt[INT_NMI_INTERRUPT], (uintptr_t)NmiInterrupt);
   SetIDTEntry(&idt[INT_BREAKPOINT], (uintptr_t)BreakPoint);
