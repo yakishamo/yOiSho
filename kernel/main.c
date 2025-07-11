@@ -54,7 +54,9 @@ int KernelMain(){
 
 	InitializeMemoryMap(u_memory_map);
 
-	terminal_v2();
+  int a = 1;
+  int b = 0;
+  int c = a/b;
 
 	hlt();
 	return 0;
