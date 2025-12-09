@@ -36,7 +36,7 @@ static inline void SetBit(int page, int bit) {
   if(index >= MEMORY_MAP_SIZE) {
     WriteString("Over", 0, 16, &red);
     WriteInteger("Page : 0x", page, 16, 0, 32, &red);
-    while(1) asm("hlt");
+    while(1) __asm__("hlt");
   }
   if(bit == 0) {
     uint8_t mask = ~(0x01 << bit_index);

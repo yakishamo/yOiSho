@@ -39,7 +39,7 @@ static void InitChunk(ChunkHead *ch, ChunkHead *next, uint64_t size, uint64_t av
 void InitializeKernelHeap(){
   kernel_heap = (uint8_t*)AllocatePage(KERNEL_HEAP_FRAMES);
   if(kernel_heap == NULL) {
-    asm("int3");
+    __asm__("int3");
   }
   Print("kernel heap allocated.");
   Print_int("kernel_heap : 0x", (uintptr_t)kernel_heap, 16);
@@ -94,7 +94,7 @@ void kfree(void *ptr) {
   ChunkHead *ch = (ChunkHead*)(((uintptr_t)ptr) - sizeof(ChunkHead));
   if(strcmp(ch->magic, KMALLOC_CHUNK_MAGIC) != 0) {
     Print("kfree failed.");
-    asm("int3");
+    __asm__("int3");
   }
   ch->flags.bits.available = 1;
 }

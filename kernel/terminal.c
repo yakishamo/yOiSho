@@ -9,10 +9,13 @@
 #include "frame.h"
 #include "cursor.h"
 
+#include "interrupt/message.h"
+
 #define TERMINAL_LINE_LEN 0x100
 
 extern FrameInfo *frame_info;
 
+IMQueue queue;
 // print string to terminal
 void Print(const char *str) {
 	int len = strlen(str);
@@ -118,6 +121,25 @@ static void cpuid(TOKEN_LIST *tl) {
   Print(buf);
 }
 
+static void Queue(TOKEN_LIST *tl) {
+  char *sub = GetToken(tl, 1);
+  if(strcmp(sub, "push") == 0) {
+    IM message = {kInterruptKeyboard};
+    IMQueuePush(&queue, &message);
+    Print("push to queue");
+    Print_int("queue size: ", IMQueueGetCurrentSize(&queue), 10);
+    return;
+  } else if (strcmp(sub, "pop") == 0) {
+    IM message = IMQueuePop(&queue);
+    if (message.type == kEmpty) {
+      Print("kEmpty");
+    } else {
+      Print("something popped");
+    }
+    Print_int("queue size: ", IMQueueGetCurrentSize(&queue), 10);
+  }
+}
+
 void command(char *line) {
 	TOKEN_LIST *tl = Tokenize(line);
   DumpTokenList(tl);
@@ -143,6 +165,8 @@ void command(char *line) {
 		editor(GetToken(tl, 1), 0, 0);
 	} else if(strcmp(first_token, "cpuid") == 0) {
     cpuid(tl);
+  } else if(strcmp(first_token, "queue") == 0) {
+    Queue(tl);
   }
   FreeTokenList(tl);
 }
@@ -214,6 +238,7 @@ void terminal() {
 	}
 }
 
+IM buf[100];
 void terminal_v2() {
   Print("terminal_v2");
   char line[TERMINAL_LINE_LEN];
@@ -226,6 +251,8 @@ void terminal_v2() {
   int i = 0; //line iter
   CURSOR cur_;
   CURSOR *cur = &cur_;
+
+  IMQueueInit(&queue, buf, 100);
 
   cur = InitializeCursor(cur,&white);
   MoveCursor(cur, 16, y_max_frame);

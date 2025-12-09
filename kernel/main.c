@@ -19,6 +19,7 @@
 #include "interrupt/interrupt.h"
 #include "kmalloc.h"
 #include "pic.h"
+#include "serial.h"
 
 #define KERNEL_STACK_SIZE 1024*1024
 
@@ -28,7 +29,7 @@ int KernelMain();
 uint16_t kernel_stack[KERNEL_STACK_SIZE/2];
 
 void hlt() {
-	while(1) asm("hlt");
+	while(1) __asm__("hlt");
 }
 
 __attribute__((ms_abi))
@@ -49,7 +50,7 @@ int KernelMain(){
   SetupIdentityPaging();
 
   SetupInterrupt();
-  InitializePic();
+  // InitializePic();
   
 	InitializeKeycode();
 
@@ -58,6 +59,10 @@ int KernelMain(){
 	InitializeMemoryMap(u_memory_map);
 
   InitializeKernelHeap();
+
+	SerialInit(COM1);
+	SerialPrint(COM1, "Hello, Serial Communication!!!\n");
+	SerialPrint(COM1, "Hello! Hello!\n");
 
 	terminal_v2();
 

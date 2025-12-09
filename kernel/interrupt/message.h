@@ -39,5 +39,6 @@ struct IM {
 IMQueue *IMQueueInit(IMQueue *queue, IM *buf, uint32_t size);
 IMQueue *IMQueuePush(IMQueue *queue, IM *message);
 IM IMQueuePop(IMQueue *queue);
+uint32_t IMQueueGetCurrentSize(IMQueue *queue);
 
 #endif /* INTERRUPT_MESSAGE_H*/

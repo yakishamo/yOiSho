@@ -9,12 +9,21 @@
 #define DEFINE_DEFAULT_INT(interrupt_name) \
   __attribute__((interrupt)) \
   static void (interrupt_name)(InterruptFrame *frame) { \
+    while(1) __asm__("hlt"); \
+    NotifyEndOfInterrupt(); \
+  }
+
+/*
+#define DEFINE_DEFAULT_INT(interrupt_name) \
+  __attribute__((interrupt)) \
+  static void (interrupt_name)(InterruptFrame *frame) { \
     char *str = #interrupt_name ; \
     WriteSquare(0,0,8*100,20,&red); \
     WriteString(str, 0,0, &white); \
     DebugHlt(frame->rip, frame->rsp, frame->flag); \
     NotifyEndOfInterrupt(); \
   }
+  */
 
 struct InterruptDescriptor idt[256];
 
@@ -32,7 +41,7 @@ void SetIDTEntry(struct InterruptDescriptor *desc, uintptr_t handler) {
 
 __attribute__((no_caller_saved_registers))
 static void hlt() {
-  while(1) asm("hlt");
+  while(1) __asm__("hlt");
 }
 
 __attribute__((no_caller_saved_registers))
@@ -81,6 +90,6 @@ void SetupInterrupt() {
   SetIDTEntry(&idt[INT_PAGE_FAULT], (uintptr_t)PageFault);
   SetIDTEntry(&idt[INT_KEYBOARD], (uintptr_t)KeyboardInterrupt);
   LoadIDT(255, (uint64_t)idt);
-  asm("sti");
+  __asm__("sti");
   return;
 }
