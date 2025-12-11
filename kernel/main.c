@@ -16,7 +16,10 @@
 #include "window.h"
 #include "asmfunc.h"
 #include "paging.h"
-#include "interrupt.h"
+#include "interrupt/interrupt.h"
+#include "kmalloc.h"
+#include "pic.h"
+#include "serial.h"
 
 #define KERNEL_STACK_SIZE 1024*1024
 
@@ -26,7 +29,7 @@ int KernelMain();
 uint16_t kernel_stack[KERNEL_STACK_SIZE/2];
 
 void hlt() {
-	while(1) asm("hlt");
+	while(1) __asm__("hlt");
 }
 
 __attribute__((ms_abi))
@@ -44,19 +47,24 @@ int KernelMain(){
 
   SetCSSS(kernel_cs, kernel_ss);
 
-  SetupInterrupt();
-
   SetupIdentityPaging();
 
+  SetupInterrupt();
+  // InitializePic();
+  
 	InitializeKeycode();
 
 	ClearScreen();
 
 	InitializeMemoryMap(u_memory_map);
 
-  int a = 1;
-  int b = 0;
-  int c = a/b;
+  InitializeKernelHeap();
+
+	SerialInit(COM1);
+	SerialPrint(COM1, "Hello, Serial Communication!!!\n");
+	SerialPrint(COM1, "\r\nrun terminal...");
+
+	terminal_v2();
 
 	hlt();
 	return 0;

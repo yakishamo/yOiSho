@@ -6,5 +6,7 @@
 EFI_MEMORY_DESCRIPTOR* GetUefiMemDesc(UefiMemoryMap *mmap, int i);
 void InitializeMemoryMap(UefiMemoryMap *u_mmap);
 uint64_t AllocatePage(uint64_t page_size);
+uint64_t GetAvailablePages();
+uint64_t GetPageMax();
 
 #endif /* MEMORY_H */

@@ -11,7 +11,7 @@ EFI_BOOT_SERVICES *gBS;
 EFI_SYSTEM_TABLE *gST;
 
 void hlt() {
-	while(1) asm("hlt");
+	while(1) __asm__("hlt");
 }
 
 VOID Print(CHAR16 *str) {

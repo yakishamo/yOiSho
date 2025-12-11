@@ -1,7 +1,8 @@
 #ifndef INTERRUPT_H
 #define INTERRUPT_H
 
-#include "../common/types64.h"
+#include "../../common/types64.h"
+#include "../queue.h"
 
 #define INT_DIVIDE_BY_ZERO                0x00
 #define INT_NMI_INTERRUPT                 0x02
@@ -21,6 +22,7 @@
 #define INT_ALIGNMENT_CHECK               0x11
 #define INT_MACHINE_CHECK                 0x12
 #define INT_SIMD_FLOATING_POINT_EXCEPTION 0x13
+#define INT_KEYBOARD                      0x21
 
 union InterruptDescriptorAttribute {
   uint16_t data;
@@ -50,6 +52,14 @@ struct InterruptFrame {
   uintptr_t rsp;
   uintptr_t ss;
 } __attribute__((packed));
+
+typedef struct InterruptFrame InterruptFrame;
+
+enum InterruptType {
+  IntKeyboard,
+};
+
+typedef enum InterruptType InterruptType;
 
 void SetIDTEntry(struct InterruptDescriptor *desc, uintptr_t handler);
 void SetupInterrupt();

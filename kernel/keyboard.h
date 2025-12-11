@@ -8,7 +8,9 @@
 #define KEYCMD_WRITE_MODE       0x60    // モード設定のためのコマンド
 #define KBC_MODE                0x47    // マウスを利用するモードにするコマンド
 
+typedef unsigned char KeyCode;
+
 void InitializeKeycode();
-char TransrateKeycode(unsigned char code, int is_shift);
+char TransrateKeycode(KeyCode code, int is_shift);
 
 #endif /* KEYBOARD_H */

@@ -8,12 +8,14 @@
 #include "string.h"
 #include "frame.h"
 #include "cursor.h"
-#include "memory.h"
+
+#include "interrupt/message.h"
 
 #define TERMINAL_LINE_LEN 0x100
 
 extern FrameInfo *frame_info;
 
+IMQueue queue;
 // print string to terminal
 void Print(const char *str) {
 	int len = strlen(str);
@@ -52,16 +54,17 @@ void Print_int(const char *val_name, uint64_t a, unsigned int radix) {
 }
 
 
-void clear() {
+void clear(TOKEN_LIST *tl) {
 	ClearScreen();
 }
 
-void ls() {
+void ls(TOKEN_LIST *tl) {
 	Print(FileList());
 }
 
-void touch(const char *file_name) {
+void touch(TOKEN_LIST *tl) {
 	FILE *f = NULL;
+  char *file_name = GetToken(tl, 1);
 	if(file_name == NULL) {
 		Print("filename is not specified");
 		return;
@@ -74,7 +77,12 @@ void touch(const char *file_name) {
 	Print("created");
 }
 
-void rm(const char *file_name) {
+void rm(TOKEN_LIST *tl) {
+  char *file_name = GetToken(tl, 1);
+  if(file_name == NULL) {
+    Print("\"rm\" need 1 arg");
+    return;
+  }
 	if(DeleteFile(file_name) == 0) {
 		Print("successfully deleted");
 	} else {
@@ -82,17 +90,22 @@ void rm(const char *file_name) {
 	}
 }
 
-void echo(const TOKEN_LIST *tl) {
+void echo(TOKEN_LIST *tl) {
 	char line_buf[TERMINAL_LINE_LEN];
 	memset(line_buf, 0, TERMINAL_LINE_LEN);
-	for(int i = 1; i < GetTokenNum(tl); i++) {
+  int token_num = GetTokenNum(tl);
+	for(int i = 1; i < token_num; i++) {
 		strcat(line_buf, GetToken(tl, i));
 		strcat(line_buf, " ");
 	}
 	Print(line_buf);
 }
 
-void cat(const char* file_name) {
+void cat(TOKEN_LIST *tl) {
+  char *file_name = GetToken(tl, 1);
+  if(file_name == NULL) {
+    return;
+  }
 	const char *str = ReadFile(file_name);
 	if(str == NULL) {
 		Print("ReadFile failed");
@@ -101,40 +114,61 @@ void cat(const char* file_name) {
 	}
 }
 
-static void cpuid() {
+static void cpuid(TOKEN_LIST *tl) {
   char buf[13];
   CpuidGetVendor(buf);
   buf[12] = '\0';
   Print(buf);
 }
 
-static void allocate() {
-  uint64_t addr = AllocatePage(1);
-  Print_int("addr : 0x", addr, 16);
+static void Queue(TOKEN_LIST *tl) {
+  char *sub = GetToken(tl, 1);
+  if(strcmp(sub, "push") == 0) {
+    IM message = {kInterruptKeyboard};
+    IMQueuePush(&queue, &message);
+    Print("push to queue");
+    Print_int("queue size: ", IMQueueGetCurrentSize(&queue), 10);
+    return;
+  } else if (strcmp(sub, "pop") == 0) {
+    IM message = IMQueuePop(&queue);
+    if (message.type == kEmpty) {
+      Print("kEmpty");
+    } else {
+      Print("something popped");
+    }
+    Print_int("queue size: ", IMQueueGetCurrentSize(&queue), 10);
+  }
 }
 
 void command(char *line) {
-	const TOKEN_LIST *tl = Tokenize(line);
-	const char *first_token = GetToken(tl, 0);
+	TOKEN_LIST *tl = Tokenize(line);
+  DumpTokenList(tl);
+	char *first_token = GetToken(tl, 0);
+  if(first_token == NULL) {
+    FreeTokenList(tl);
+    return;
+  }
+
 	if(strcmp(first_token, "echo") == 0) {
 		echo(tl);
 	}	else if(strcmp(first_token, "clear") == 0 ) {
-		clear();
+		clear(tl);
 	} else if(strcmp(first_token, "ls") == 0 ) {
-		ls();
+		ls(tl);
 	} else if(strcmp(first_token, "touch") == 0) {
-		touch(GetToken(tl, 1));
+		touch(tl);
 	} else if(strcmp(first_token, "rm") == 0) {
-		rm(GetToken(tl,1));
+		rm(tl);
 	} else if(strcmp(first_token, "cat") == 0) {
-		cat(GetToken(tl, 1));
+		cat(tl);
 	} else if(strcmp(first_token, "edit") == 0) {
 		editor(GetToken(tl, 1), 0, 0);
 	} else if(strcmp(first_token, "cpuid") == 0) {
-    cpuid();
-  } else if(strcmp(first_token, "allocate") == 0) {
-    allocate();
+    cpuid(tl);
+  } else if(strcmp(first_token, "queue") == 0) {
+    Queue(tl);
   }
+  FreeTokenList(tl);
 }
 
 // fontsize x:8, y:20
@@ -204,6 +238,7 @@ void terminal() {
 	}
 }
 
+IM buf[100];
 void terminal_v2() {
   Print("terminal_v2");
   char line[TERMINAL_LINE_LEN];
@@ -216,6 +251,8 @@ void terminal_v2() {
   int i = 0; //line iter
   CURSOR cur_;
   CURSOR *cur = &cur_;
+
+  IMQueueInit(&queue, buf, 100);
 
   cur = InitializeCursor(cur,&white);
   MoveCursor(cur, 16, y_max_frame);

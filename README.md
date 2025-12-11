@@ -48,3 +48,7 @@ make runで実行できます.
 * window.h
   * window作らずターミナルだけで作っていこうと思っていたのに気づいたらwindowクラスのようなものを作っており敗北
   * GUIは後半で実装するので封印
+* kmalloc.h
+  * kmalloc()とkfree()の実装，あとカーネルのヒープ領域の確保
+* interrupt.h
+  * 割り込み処理に必要な構造体定義等
