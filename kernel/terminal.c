@@ -8,6 +8,7 @@
 #include "string.h"
 #include "frame.h"
 #include "cursor.h"
+#include "serial.h"
 
 #include "interrupt/message.h"
 
@@ -309,4 +310,9 @@ void terminal_v2() {
       }
     }
   }
+}
+
+void terminal_serial(uint32_t port) {
+	SerialPrint(port, "Hello, serial terminal\n\r");
+	while(1) __asm__("hlt");
 }

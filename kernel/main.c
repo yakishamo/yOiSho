@@ -62,9 +62,9 @@ int KernelMain(){
 
 	SerialInit(COM1);
 	SerialPrint(COM1, "Hello, Serial Communication!!!\n");
-	SerialPrint(COM1, "\r\nrun terminal...");
+	SerialPrint(COM1, "\r\nrun terminal...\r\n");
 
-	terminal_v2();
+	terminal_serial(COM1);
 
 	hlt();
 	return 0;
