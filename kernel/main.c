@@ -64,10 +64,6 @@ int KernelMain(){
 	SerialPrint(serial_com1, "Hello, Serial Communication!!!\n");
 	SerialPrint(serial_com1, "\r\nrun terminal...\r\n");
 
-	while(1) {
-		SerialSend(serial_com1, SerialReceive(serial_com1));
-	}
-
 	terminal_serial(serial_com1);
 
 	hlt();

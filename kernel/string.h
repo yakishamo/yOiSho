@@ -12,6 +12,7 @@ int strncmp(const char *s1, const char *s2, size_t n);
 char *strncpy(char *s1, const char *s2, size_t n);
 char *strcpy(char *s1, const char *s2);
 char *strcat(char *s1, const char *s2);
-int itoa(char *str);
+int atoi(char *str);
+void itoa(char *str, uint64_t a, unsigned int radix);
 
 #endif /* STRING_H */

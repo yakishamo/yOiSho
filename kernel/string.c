@@ -89,7 +89,7 @@ int pow(int a, int b) {
 	return ret;
 }
 
-int itoa(char *str) {
+int atoi(char *str) {
 	int ret = 0;
 	int len = strlen(str);
 	char zero = '0';
@@ -98,3 +98,26 @@ int itoa(char *str) {
 	}
 	return ret;
 }
+
+void itoa(char *str, uint64_t a, unsigned int radix) {
+	char *p = str;
+	unsigned int v = a;
+	int n = 1;
+	while(v >= radix) {
+		v/=radix;
+		n++;
+	}
+	p = str + n;
+	v = a;
+	*p = 0;
+	do {
+		p--;
+		*p = v % radix + (char)'0';
+		if(*p > (char)'9') {
+			*p = v % radix - 10 + 'A';
+		}
+		v /= radix;
+	} while(p != str);
+	return;
+}
+
