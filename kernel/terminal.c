@@ -312,7 +312,7 @@ void terminal_v2() {
   }
 }
 
-void terminal_serial(uint32_t port) {
-	SerialPrint(port, "Hello, serial terminal\n\r");
+void terminal_serial(SERIAL *s) {
+	SerialPrint(s, "Hello, serial terminal\n\r");
 	while(1) __asm__("hlt");
 }

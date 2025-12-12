@@ -60,11 +60,15 @@ int KernelMain(){
 
   InitializeKernelHeap();
 
-	SerialInit(COM1);
-	SerialPrint(COM1, "Hello, Serial Communication!!!\n");
-	SerialPrint(COM1, "\r\nrun terminal...\r\n");
+	SERIAL *serial_com1 = InitializeSerial(1);
+	SerialPrint(serial_com1, "Hello, Serial Communication!!!\n");
+	SerialPrint(serial_com1, "\r\nrun terminal...\r\n");
 
-	terminal_serial(COM1);
+	while(1) {
+		SerialSend(serial_com1, SerialReceive(serial_com1));
+	}
+
+	terminal_serial(serial_com1);
 
 	hlt();
 	return 0;
