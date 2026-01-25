@@ -2,24 +2,32 @@
 #include "serial.h"
 #include "asmfunc.h"
 #include "kmalloc.h"
+#include "string.h"
 
 #define COM1 0x3f8
 #define COM2 0x2f8
 #define COM3 0x3e8
 #define COM4 0x2e8
 
+// Cursor on serial
+//
+typedef struct SERIAL_CURSOR {
+	uint64_t x;
+	uint64_t y;
+} SERIAL_CURSOR;
+
 struct SERIAL_ {
 	uint32_t port;
+	SERIAL_CURSOR cursor;
 };
 
-static uint8_t coms = 0;
-
+static uint8_t used_coms = 0;
 SERIAL* InitializeSerial(uint32_t com) {
-	int is_com_used = (coms>>(com-1))&1;
+	int is_com_used = (used_coms>>(com-1))&1;
 	if(is_com_used == 1) {
 		return NULL;
 	}
-	coms = 1 << (com-1);
+	used_coms = 1 << (com-1);
 	int port;
 	switch(com) {
 		case 1:
@@ -40,7 +48,7 @@ SERIAL* InitializeSerial(uint32_t com) {
 
 	IoOut8(port + 1, 0x00); // IER - disable all interrupts
 	IoOut8(port + 3, 0x80); // LCR - enable DLAB
-	IoOut8(port + 0, 0x03); // DLL - set baud late 38400 bps (write 115200/38400 = 3)
+	IoOut8(port + 0, 0x01); // DLL - set baud late 115200 bps
 	IoOut8(port + 1, 0x00); // DLM
 	IoOut8(port + 3, 0x03); // LCR - disable DLAB, 8bit, no parity, 1 stop bit
 	IoOut8(port + 2, 0xc7); // FCR - enable FIFO, clear TX/RX queues, 14bytes threshold
@@ -56,6 +64,7 @@ SERIAL* InitializeSerial(uint32_t com) {
 	IoOut8(port + 4, 0x0f); // MCR - set normal mode, RTS/DSR set
 	SERIAL *s = kmalloc(sizeof(SERIAL));
 	s->port = port;
+	SerialClear(s);
 	return s;
 }
 
@@ -73,10 +82,24 @@ uint8_t SerialReceive(SERIAL *s) {
 	return IoIn8(port);
 }
 
-void SerialPrint(SERIAL *s, char *str) {
+uint8_t SerialReceiveNoNull(SERIAL *s) {
+	char c = '\0';
+	while((c = SerialReceive(s)) == '\0');
+	return c;
+}
+
+// this doesn't move SERIAL_CURSOR in SERIAL
+static void SerialPrintRaw(SERIAL *s, char *str) {
 	char *c = str;
 	while(*c != '\0') {
 		SerialSend(s, *c);
 		c++;
 	}
 }
+
+void SerialClear(SERIAL *s) {
+	s->cursor.x = 0;
+	s->cursor.y = 0;
+	SerialPrintRaw(s, SERIAL_CLEAR);
+}
+

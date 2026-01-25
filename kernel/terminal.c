@@ -313,6 +313,4 @@ void terminal_v2() {
 }
 
 void terminal_serial(SERIAL *serial) {
-	SerialPrint(serial, "Hello, serial terminal\n\r");
-	while(1) SerialSend(serial, SerialReceive(serial));
 }
