@@ -16,12 +16,8 @@ run:
 		-drive if=pflash,format=raw,file=./ovmf/OVMF_CODE.fd,readonly=on \
 		-drive if=pflash,format=raw,file=./ovmf/OVMF_VARS.fd \
 		-drive if=ide,format=raw,file=fat:rw:fs,index=0,media=disk \
-<<<<<<< HEAD
     -device nec-usb-xhci,id=xhciv \
-		-monitor stdio \
-=======
-		-serial stdio \
->>>>>>> serial_#26
+		-nographic \
     -d int \
     -D qemu_debug.log
 

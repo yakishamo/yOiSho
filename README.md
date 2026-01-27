@@ -2,9 +2,10 @@
 自作OSをやります.
 
 ## 起動方法
-qemu, clang, lld, x86\_64-w64-mingw32-gccがあれば動きます多分.  
-makeでコンパイル,   
-make runで実行できます. 
+qemu, clang, lld, x86\_64-w64-mingw32-gccがあれば動きます多分．  
+ovmf/以下にOVMF\_CODE.fdとOVMF\_VARS.fdを配置してください．
+makeでコンパイル，  
+make runで実行できます．  
 
 ## コマンド一覧
 * ls
@@ -33,8 +34,6 @@ make runで実行できます.
   * 文字列処理(strlen()など)
 * keyboard.h
   * キーコードからAscii文字への変換など
-* terminal.h
-  * ターミナルの処理を行う関数．コマンド定義なども含む．
 * cursor.h
   * 文字入力時に使うカーソルの定義
 * parse.h
@@ -45,9 +44,6 @@ make runで実行できます.
   * ファイル編集コマンドeditの本体
 * asmfunc.asm
   * アセンブリでしか書けない処理をまとめたファイル．基本的にインラインアセンブラは使わない．**アセンブリ書く方がカッコイイので．**
-* window.h
-  * window作らずターミナルだけで作っていこうと思っていたのに気づいたらwindowクラスのようなものを作っており敗北
-  * GUIは後半で実装するので封印
 * kmalloc.h
   * kmalloc()とkfree()の実装，あとカーネルのヒープ領域の確保
 * interrupt.h

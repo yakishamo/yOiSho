@@ -4,7 +4,6 @@
 #include "memory.h"
 #include "string.h"
 #include "frame.h"
-#include "terminal.h"
 
 #define MEMORY_MAP_SIZE 1024*1024/8 * 4
 
@@ -68,7 +67,6 @@ void InitializeMemoryMap(UefiMemoryMap *u_mmap) {
       }
 		}
 	}
-	Print_int("Available memory : 0x", pages * 0x1000, 16);
 }
 
 // when page is not allocated, return 0
@@ -95,7 +93,6 @@ uint64_t AllocatePage(uint64_t page_size) {
 
 uint64_t GetAvailablePages() {
   uint64_t available_pages = 0;
-  Print_int("MEMORY_MAP_SIZE*8 : 0x", MEMORY_MAP_SIZE*8, 16);
   for(uint64_t i = 0; i < MEMORY_MAP_SIZE*8; i++) {
     if(GetBit(i) == 0) {
       available_pages++;

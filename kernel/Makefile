@@ -1,6 +1,6 @@
 TARGET = kernel.elf
-OBJS = asmfunc.o main.o hankaku.o frame.o string.o keyboard.o file.o cursor.o parse.o editor.o \
-			 terminal.o memory.o segment.o paging.o interrupt/interrupt.o interrupt/message.o kmalloc.o pic.o queue.o \
+OBJS = asmfunc.o main.o hankaku.o frame.o string.o keyboard.o file.o parse.o \
+			 memory.o segment.o paging.o interrupt/interrupt.o interrupt/message.o kmalloc.o pic.o queue.o \
 			 serial.o
 
 CC=clang

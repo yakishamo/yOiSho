@@ -1,5 +1,4 @@
 #include "../common/types64.h"
-#include "terminal.h"
 #include "memory.h"
 #include "string.h"
 
@@ -41,8 +40,6 @@ void InitializeKernelHeap(){
   if(kernel_heap == NULL) {
     __asm__("int3");
   }
-  Print("kernel heap allocated.");
-  Print_int("kernel_heap : 0x", (uintptr_t)kernel_heap, 16);
   chunk_root = (ChunkHead*)kernel_heap;
   InitChunk(chunk_root, NULL, KERNEL_HEAP_FRAMES * 0x100 - sizeof(ChunkHead), 1);
 }
@@ -93,7 +90,6 @@ void *kmalloc(uint64_t size) {
 void kfree(void *ptr) {
   ChunkHead *ch = (ChunkHead*)(((uintptr_t)ptr) - sizeof(ChunkHead));
   if(strcmp(ch->magic, KMALLOC_CHUNK_MAGIC) != 0) {
-    Print("kfree failed.");
     __asm__("int3");
   }
   ch->flags.bits.available = 1;
@@ -103,11 +99,7 @@ void DumpHeap() {
   ChunkHead *iter = chunk_root;
   uint64_t size = 0;
   while(iter != NULL) {
-    Print_int("addr : 0x", (uint64_t)iter->chunk, 16);
-    Print_int("  size : 0x", iter->size, 16);
-    Print_int("  available : ", iter->flags.bits.available, 10);
     size += iter->size;
     iter = iter->next;
   }
-  Print_int("all size : 0x", size, 16);
 }
