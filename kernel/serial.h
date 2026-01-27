@@ -5,12 +5,12 @@
 
 #define SERIAL_CLEAR "\e[2J\e[0;0H"
 
-typedef struct SERIAL_ SERIAL;
+typedef struct SERIAL_CONSOLE_ SERIAL_CONSOLE;
 
-void SerialClear(SERIAL *s);
-SERIAL* InitializeSerial(uint32_t com);
-void SerialSend(SERIAL *s, uint8_t data);
-uint8_t SerialReceive(SERIAL *s);
-uint8_t SerialReceiveNoNull(SERIAL *s);
+void SerialConsoleClear(SERIAL_CONSOLE *s);
+SERIAL_CONSOLE* InitializeSerialConsole(uint32_t com);
+uint8_t SerialReceive(SERIAL_CONSOLE *s);
+uint8_t SerialReceiveNoNull(SERIAL_CONSOLE *s);
+void SerialConsolePrint(SERIAL_CONSOLE *s, char *str);
 
 #endif /* SERIAL_H */

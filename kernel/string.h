@@ -4,6 +4,8 @@
 #include "../common/types64.h"
 #include "../common/def.h"
 
+#define ASCII_TO_NUM(n) n-0x30
+
 int strlen(const char *str);
 void *memset(void *s, int c, size_t n);
 void *memmove(void *buf1, const void *buf2, size_t n);

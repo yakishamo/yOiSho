@@ -60,9 +60,13 @@ int KernelMain(){
 
   InitializeKernelHeap();
 
-	SERIAL *serial_com1 = InitializeSerial(1);
+	SERIAL_CONSOLE *serial_com1 = InitializeSerialConsole(1);
 
-	terminal_serial(serial_com1);
+	SerialConsolePrint(serial_com1, "SerialPrint test");
+	SerialConsolePrint(serial_com1, "HogeHoge");
+	SerialConsolePrint(serial_com1, "FugaFuga\e");
+	SerialConsolePrint(serial_com1, "\e[5BPiypPiyo");
+//	terminal_serial(serial_com1);
 
 	hlt();
 	return 0;

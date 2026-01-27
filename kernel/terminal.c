@@ -312,5 +312,5 @@ void terminal_v2() {
   }
 }
 
-void terminal_serial(SERIAL *serial) {
+void terminal_serial(SERIAL_CONSOLE *serial) {
 }
