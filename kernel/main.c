@@ -7,13 +7,9 @@
 #include "asmfunc.h"
 #include "keyboard.h"
 #include "file.h"
-#include "cursor.h"
 #include "parse.h"
-#include "editor.h"
-#include "terminal.h"
 #include "memory.h"
 #include "segment.h"
-#include "window.h"
 #include "asmfunc.h"
 #include "paging.h"
 #include "interrupt/interrupt.h"
@@ -66,7 +62,6 @@ int KernelMain(){
 	SerialConsolePrint(serial_com1, "HogeHoge");
 	SerialConsolePrint(serial_com1, "FugaFuga\e");
 	SerialConsolePrint(serial_com1, "\e[5BPiypPiyo");
-//	terminal_serial(serial_com1);
 
 	hlt();
 	return 0;

@@ -1,7 +1,6 @@
 #include "string.h"
 #include "kmalloc.h"
 #include "parse.h"
-#include "terminal.h"
 
 #define TOKEN_NUM_MAX 0x10
 

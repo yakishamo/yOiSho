@@ -9,16 +9,8 @@
 #define COM3 0x3e8
 #define COM4 0x2e8
 
-// Cursor on serial
-//
-typedef struct SERIAL_CURSOR {
-	uint64_t x;
-	uint64_t y;
-} SERIAL_CURSOR;
-
 struct SERIAL_CONSOLE_ {
 	uint32_t port;
-	SERIAL_CURSOR cursor;
 };
 
 static uint8_t used_coms = 0;
@@ -67,7 +59,7 @@ SERIAL_CONSOLE* InitializeSerialConsole(uint32_t com) {
 	return s;
 }
 
-static void SerialConsoleSendRaw(SERIAL_CONSOLE *s, uint8_t data) {
+static void SerialConsoleSend(SERIAL_CONSOLE *s, uint8_t data) {
 	uint32_t port = s->port;
 	while((IoIn8(port+5) & 0x20) == 0); // waiting THR by watching LSR
 	IoOut8(port, data);
@@ -87,75 +79,14 @@ uint8_t SerialConsoleReceiveNoNull(SERIAL_CONSOLE *s) {
 	return c;
 }
 
-// this doesn't move SERIAL_CURSOR in SERIAL_CONSOLE 
-static void SerialConsolePrintRaw(SERIAL_CONSOLE *s, char *str) {
+void SerialConsolePrint(SERIAL_CONSOLE *s, char *str) {
 	char *c = str;
 	while(*c != '\0') {
-		SerialConsoleSendRaw(s, *c);
+		SerialConsoleSend(s, *c);
 		c++;
 	}
 }
 
 void SerialConsoleClear(SERIAL_CONSOLE *s) {
-	s->cursor.x = 0;
-	s->cursor.y = 0;
-	SerialConsolePrintRaw(s, SERIAL_CLEAR);
-}
-
-// Processes escape sequence and compute cursor location
-// It returns sequence size
-static uintptr_t process_esc_seq(SERIAL_CURSOR *cur, char *start) {
-	if(*start != '\e') {
-		// *start should be '\e'
-		return 0;
-	}
-	char *c = start;
-	c++;
-	if(*c == '[') {
-		c++;
-		int seq_param = 0;
-		while(*c>='0' && *c<='9') {
-			seq_param *= 10;
-			seq_param += ASCII_TO_NUM(*c);
-			c++;
-		}
-		switch(*c) {
-			case 'A':
-				cur->y -= 1;
-				break;
-			case 'B':
-				cur->y += 1;
-				break;
-			case 'C':
-				cur->x += 1;
-				break;
-			case 'D':
-				cur->x -= 1; 
-				break;
-			default:
-				// unhandled sequence
-				break;
-		}
-		return (uintptr_t)c - (uintptr_t)start + 1;
-	} else {
-		// Parameter start is not escape sequence
-		// Escape sequence starts "\e["
-		return 1 ;
-	}
-}
-
-
-void SerialConsolePrint(SERIAL_CONSOLE *s, char *str) {
-	for(char *c = str; *c != '\0'; c++) {
-		if(*c == '\e') {
-			uintptr_t seq_size = process_esc_seq(&(s->cursor), c);
-			for(uintptr_t i = 0; i < seq_size; i++) {
-				SerialConsoleSendRaw(s, *c);
-				c++;
-			}
-		} else {
-			SerialConsoleSendRaw(s, *c);
-			s->cursor.x += 1;
-		}
-	}
+	SerialConsolePrint(s, SERIAL_CLEAR);
 }
