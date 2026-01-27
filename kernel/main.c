@@ -16,6 +16,7 @@
 #include "kmalloc.h"
 #include "pic.h"
 #include "serial.h"
+#include "kprintf.h"
 
 #define KERNEL_STACK_SIZE 1024*1024
 
@@ -58,10 +59,10 @@ int KernelMain(){
 
 	SERIAL_CONSOLE *serial_com1 = InitializeSerialConsole(1);
 
-	SerialConsolePrint(serial_com1, "SerialPrint test");
-	SerialConsolePrint(serial_com1, "HogeHoge");
-	SerialConsolePrint(serial_com1, "FugaFuga\e");
-	SerialConsolePrint(serial_com1, "\e[5BPiypPiyo");
+	setKprintfSerial(serial_com1);
+
+	kprint("Hello, yOiSho!!\r\n");
+	kprint("test test");
 
 	hlt();
 	return 0;
