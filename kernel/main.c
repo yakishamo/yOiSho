@@ -62,7 +62,11 @@ int KernelMain(){
 	setKprintfSerial(serial_com1);
 
 	kprint("Hello, yOiSho!!\r\n");
-	kprint("test test");
+	kprint("test test\r\n");
+	kprintf("test %d test\r\n", 43);
+	kprintf("test %c test\r\n", 'X');
+	kprintf("test %s test\r\n", "hogehoge");
+	kprintf("%c%c%c%c 0x%x %s",'c','h','a','r', 0xdeadbeef, "test complete!!");
 
 	hlt();
 	return 0;
