@@ -59,7 +59,7 @@ SERIAL_CONSOLE* InitializeSerialConsole(uint32_t com) {
 	return s;
 }
 
-static void SerialConsoleSend(SERIAL_CONSOLE *s, uint8_t data) {
+void sendSerialConsole(SERIAL_CONSOLE *s, uint8_t data) {
 	uint32_t port = s->port;
 	while((IoIn8(port+5) & 0x20) == 0); // waiting THR by watching LSR
 	IoOut8(port, data);
@@ -82,7 +82,7 @@ uint8_t SerialConsoleReceiveNoNull(SERIAL_CONSOLE *s) {
 void SerialConsolePrint(SERIAL_CONSOLE *s, char *str) {
 	char *c = str;
 	while(*c != '\0') {
-		SerialConsoleSend(s, *c);
+		sendSerialConsole(s, *c);
 		c++;
 	}
 }

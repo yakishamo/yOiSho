@@ -109,7 +109,7 @@ void itoa(char *str, uint64_t a, unsigned int radix) {
 	}
 	p = str + n;
 	v = a;
-	*p = 0;
+	*p = '\0';
 	do {
 		p--;
 		*p = v % radix + (char)'0';

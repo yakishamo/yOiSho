@@ -5,6 +5,7 @@
 
 void setKprintfSerial(SERIAL_CONSOLE *s);
 void removeKprintfSerial();
-void kprint(char *str);
+extern void kprint(char *str);
+extern void kprintf(char *fmt, ...);
 
 #endif /* KPRINTF_H */
