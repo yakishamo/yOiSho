@@ -7,3 +7,5 @@ ovmf
 *.swp
 *.EFI
 qemu_debug.log
+mnt
+*.img
