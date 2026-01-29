@@ -38,22 +38,22 @@ ifeq ($(UNAME_S),Darwin)
 	make umount-macos
 else ifeq ($(UNAME_S),Linux)
 	make mount-linux
-	make cp
+	sudo make cp
 	make umount-linux
 else
 	@echo "Unsupported OS: $(UNAME_S)"
 	@exit1
 endif
 	qemu-system-x86_64 \
-    -no-reboot \
+		-no-reboot \
 		-m 4G \
 		-drive if=pflash,format=raw,file=./ovmf/OVMF_CODE.fd,readonly=on \
 		-drive if=pflash,format=raw,file=./ovmf/OVMF_VARS.fd \
 		-drive if=ide,index=0,media=disk,format=raw,file=$(DISK_IMG) \
-    -device nec-usb-xhci,id=xhciv \
+		-device nec-usb-xhci,id=xhciv \
 		-nographic \
-    -d int \
-    -D qemu_debug.log
+		-serial mon:stdio \
+		-d int
 
 init:
 	mkdir -p fs/EFI/BOOT || :
@@ -66,7 +66,9 @@ ifeq ($(UNAME_S),Darwin)
 	mkdir -p mnt/EFI/BOOT
 	make umount-macos
 else ifeq ($(UNAME_S),Linux)
-	make init-linux
+	make mount-linux
+	sudo mkdir -p mnt/EFI/BOOT
+	make umount-linux
 else
 	@echo "Unsupported OS: $(UNAME_S)"
 	@exit1
