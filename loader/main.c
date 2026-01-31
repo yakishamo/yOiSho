@@ -3,6 +3,7 @@
 #include "../uefi/uefi_simple_file_system_protocol.h"
 #include "../uefi/uefi_file_protocol.h"
 #include "../uefi/uefi_graphics_output_protocol.h"
+#include "../uefi/uefi_block_io_protocol.h"
 #include "../common/elf.h"
 #include "../common/frame_info.h"
 #include "../common/memory_map.h"
@@ -48,6 +49,74 @@ VOID Print_int(UINTN a, unsigned int radix) {
 		v /= radix;
 	} while(p != str);
 	Print(str);
+}
+
+EFI_STATUS ReadFile(EFI_FILE_PROTOCOL* file, VOID** buffer) {
+	EFI_STATUS status;
+
+	UINTN file_info_size = sizeof(EFI_FILE_INFO) + sizeof(CHAR16) * 12;
+	UINT8 file_info_buffer[file_info_size];
+	EFI_GUID file_info_id = EFI_FILE_INFO_ID;
+	status = file->GetInfo(
+		file, &file_info_id, &file_info_size, file_info_buffer);
+	if(EFI_ERROR(status)) {
+		return status;
+	}
+
+	EFI_FILE_INFO* file_info = (EFI_FILE_INFO*)file_info_buffer;
+	UINTN file_size = file_info->FileSize;
+
+	status = gBS->AllocatePool(EfiLoaderData, file_size, buffer);
+	if(EFI_ERROR(status)) {
+		return status;
+	}
+	return file->Read(file, &file_size, *buffer);
+}
+
+EFI_STATUS OpenBlockIoProtocolForLoadedImage(
+		EFI_HANDLE image_handle, EFI_BLOCK_IO_PROTOCOL** block_io) {
+	EFI_STATUS status;
+	EFI_LOADED_IMAGE_PROTOCOL *loaded_image;
+
+	EFI_GUID efi_loaded_image_protocol_guid = EFI_LOADED_IMAGE_PROTOCOL_GUID;
+	status = gBS->OpenProtocol(
+		image_handle,
+		&efi_loaded_image_protocol_guid,
+		(VOID**)&loaded_image,
+		image_handle,
+		NULL,
+		EFI_OPEN_PROTOCOL_BY_HANDLE_PROTOCOL);
+	if(EFI_ERROR(status)) {
+		return status;
+	}
+
+	status = gBS->OpenProtocol(
+			loaded_image->DeviceHandle,
+			&efi_loaded_image_protocol_guid,
+			(VOID**)block_io,
+			image_handle,
+			NULL,
+			EFI_OPEN_PROTOCOL_BY_HANDLE_PROTOCOL);
+	return status;
+}
+
+EFI_STATUS ReadBlocks(
+		EFI_BLOCK_IO_PROTOCOL *block_io, UINT32 media_id,
+		UINTN read_bytes, VOID** buffer) {
+	EFI_STATUS status;
+
+	status = gBS->AllocatePool(EfiLoaderData, read_bytes, buffer);
+	if(EFI_ERROR(status)) {
+		return status;
+	}
+
+	status = block_io->ReadBlocks(
+			block_io,
+			media_id,
+			0,
+			read_bytes,
+			*buffer);
+	return status;
 }
 
 EFI_STATUS EFIAPI efi_main(void *image_handle __attribute((unused)),
@@ -235,6 +304,42 @@ EFI_STATUS EFIAPI efi_main(void *image_handle __attribute((unused)),
 	if(status != EFI_SUCCESS) {
 		Print(L"Locate gop failed.\r\n");
 		hlt();
+	}
+
+	// read volume and copy to memory
+	VOID *volume_image;
+	EFI_FILE_PROTOCOL *volume_file;
+	status = root_dir->Open(
+		root_dir, &volume_file, L"\\fat_disk",
+		EFI_FILE_MODE_READ, 0);
+	if(status == EFI_SUCCESS) {
+		status = ReadFile(volume_file, &volume_image);
+		if(EFI_ERROR(status)) {
+			Print(L"failed to read volume file: ");
+			Print_int(status, 10);
+			hlt();
+		}
+	} else {
+		EFI_BLOCK_IO_PROTOCOL *block_io;
+		status = OpenBlockIoProtocolForLoadedImage(image_handle, &block_io);
+		if(EFI_ERROR(status)) {
+			Print(L"failed to open Block I/O Protocol: ");
+			Print_int(status, 10);
+			hlt();
+		}
+
+		EFI_BLOCK_IO_MEDIA *media = block_io->Media;
+		UINTN volume_bytes = (UINTN)media->BlockSize * (media->LastBlock + 1);
+		if(volume_bytes > 16 * 1024 * 1024) {
+			volume_bytes = 16 * 1024 * 1024;
+		}
+
+		status = ReadBlocks(block_io, media->MediaId, volume_bytes, &volume_image);
+		if(EFI_ERROR(status)) {
+			Print(L"failed to read blocks: ");
+			Print_int(status, 10);
+			hlt();
+		}
 	}
 
 	// prepare frame info
