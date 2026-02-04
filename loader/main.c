@@ -54,7 +54,7 @@ VOID Print_int(UINTN a, unsigned int radix) {
 EFI_STATUS ReadFile(EFI_FILE_PROTOCOL* file, VOID** buffer) {
 	EFI_STATUS status;
 
-	UINTN file_info_size = sizeof(EFI_FILE_INFO) + sizeof(CHAR16) * 12;
+	UINTN file_info_size = sizeof(EFI_FILE_INFO) +24;
 	UINT8 file_info_buffer[file_info_size];
 	EFI_GUID file_info_id = EFI_FILE_INFO_ID;
 	status = file->GetInfo(
@@ -78,10 +78,10 @@ EFI_STATUS OpenBlockIoProtocolForLoadedImage(
 	EFI_STATUS status;
 	EFI_LOADED_IMAGE_PROTOCOL *loaded_image;
 
-	EFI_GUID efi_loaded_image_protocol_guid = EFI_LOADED_IMAGE_PROTOCOL_GUID;
+	EFI_GUID loaded_image_guid = EFI_LOADED_IMAGE_PROTOCOL_GUID;
 	status = gBS->OpenProtocol(
 		image_handle,
-		&efi_loaded_image_protocol_guid,
+		&loaded_image_guid,
 		(VOID**)&loaded_image,
 		image_handle,
 		NULL,
@@ -90,9 +90,10 @@ EFI_STATUS OpenBlockIoProtocolForLoadedImage(
 		return status;
 	}
 
+	EFI_GUID block_io_guid = EFI_BLOCK_IO_PROTOCOL_GUID;
 	status = gBS->OpenProtocol(
 			loaded_image->DeviceHandle,
-			&efi_loaded_image_protocol_guid,
+			&block_io_guid,
 			(VOID**)block_io,
 			image_handle,
 			NULL,
@@ -140,7 +141,7 @@ EFI_STATUS EFIAPI efi_main(void *image_handle __attribute((unused)),
 			image_handle,
 			NULL,
 			EFI_OPEN_PROTOCOL_BY_HANDLE_PROTOCOL);
-	if(status != EFI_SUCCESS) {
+	if(EFI_ERROR(status)) {
 		Print(L"failed to open EFI_LOADED_IMAGE_PROTOCOL\r\n");
 		hlt();
 	}
@@ -156,7 +157,7 @@ EFI_STATUS EFIAPI efi_main(void *image_handle __attribute((unused)),
 			image_handle,
 			NULL,
 			EFI_OPEN_PROTOCOL_BY_HANDLE_PROTOCOL);
-	if(status != EFI_SUCCESS) {
+	if(EFI_ERROR(status)) {
 		Print(L"failed to open EFI_SIMPLE_FILE_SYSTEM_PROTOCOL\r\n");
 		hlt();
 	}
@@ -165,7 +166,7 @@ EFI_STATUS EFIAPI efi_main(void *image_handle __attribute((unused)),
 	// open root
 	EFI_FILE_PROTOCOL *root_dir;
 	status = fs->OpenVolume(fs, &root_dir);
-	if(status != EFI_SUCCESS) {
+	if(EFI_ERROR(status)) {
 		Print(L"failed to open root.\r\n");
 		hlt();
 	}
@@ -176,7 +177,7 @@ EFI_STATUS EFIAPI efi_main(void *image_handle __attribute((unused)),
 	status = root_dir->Open(
 		root_dir, &kernel_file, L"\\kernel.elf",
 		EFI_FILE_MODE_READ, 0);
-	if( status != EFI_SUCCESS) {
+	if(EFI_ERROR(status)) {
 		Print(L"failed to open kernel.elf\r\n");
 		hlt();
 	}
@@ -192,7 +193,7 @@ EFI_STATUS EFIAPI efi_main(void *image_handle __attribute((unused)),
 			&file_info_guid,
 			&kernel_info_size,
 			kernel_info);
-	if(status != EFI_SUCCESS) {
+	if(EFI_ERROR(status)) {
 		Print(L"failed to get kernel info\r\n");
 		hlt();
 	}
@@ -205,7 +206,7 @@ EFI_STATUS EFIAPI efi_main(void *image_handle __attribute((unused)),
 			kernel_file_size,
 			(VOID**)&kernel_tmp_buf
 			);
-	if(status != EFI_SUCCESS) {
+	if(EFI_ERROR(status)) {
 		Print(L"failed to allocate pool for kernel_tmp_buf\r\n");
 		hlt();
 	}
@@ -217,7 +218,7 @@ EFI_STATUS EFIAPI efi_main(void *image_handle __attribute((unused)),
 			&kernel_file_size,
 			kernel_tmp_buf
 			);
-	if(status != EFI_SUCCESS) {
+	if(EFI_ERROR(status)) {
 		Print(L"failed to read kernel.elf\r\n");
 		hlt();
 	}
@@ -256,7 +257,7 @@ EFI_STATUS EFIAPI efi_main(void *image_handle __attribute((unused)),
 			page_num,
 			&kernel_start_addr
 			);
-	if(status != EFI_SUCCESS) {
+	if(EFI_ERROR(status)) {
 		Print(L"failed to allocate kernel buffer\r\n");
 		Print(L"kernel_start_addr : 0x");
 		Print_int(kernel_start_addr, 16);
@@ -301,7 +302,7 @@ EFI_STATUS EFIAPI efi_main(void *image_handle __attribute((unused)),
 			NULL,
 			(VOID**)&gop
 			);
-	if(status != EFI_SUCCESS) {
+	if(EFI_ERROR(status)) {
 		Print(L"Locate gop failed.\r\n");
 		hlt();
 	}
@@ -333,6 +334,8 @@ EFI_STATUS EFIAPI efi_main(void *image_handle __attribute((unused)),
 		if(volume_bytes > 16 * 1024 * 1024) {
 			volume_bytes = 16 * 1024 * 1024;
 		}
+		Print(L"volume_bytes: 0x");
+		Print_int(volume_bytes, 16);
 
 		status = ReadBlocks(block_io, media->MediaId, volume_bytes, &volume_image);
 		if(EFI_ERROR(status)) {
@@ -349,7 +352,7 @@ EFI_STATUS EFIAPI efi_main(void *image_handle __attribute((unused)),
 			sizeof(FrameInfo),
 			(VOID**)&fi
 			);
-	if(status != EFI_SUCCESS) {
+	if(EFI_ERROR(status)) {
 		Print(L"failed to allocate pool for frame info\r\n");
 		hlt();
 	}
@@ -375,7 +378,7 @@ EFI_STATUS EFIAPI efi_main(void *image_handle __attribute((unused)),
 			sizeof(UefiMemoryMap),
 			(VOID**)&memory_map
 			);
-	if(status != EFI_SUCCESS) {
+	if(EFI_ERROR(status)) {
 		Print(L"failed to allocate pool for memory map\r\n");
 		hlt();
 	}
@@ -389,7 +392,7 @@ EFI_STATUS EFIAPI efi_main(void *image_handle __attribute((unused)),
 			memory_map->map_size,
 			(VOID**)&memory_map->desc
 			);
-	if(status != EFI_SUCCESS) {
+	if(EFI_ERROR(status)) {
 		Print(L"failed to allocate pool for memory descriptor\r\n");
 		hlt();
 	}
@@ -401,21 +404,22 @@ EFI_STATUS EFIAPI efi_main(void *image_handle __attribute((unused)),
 			&memory_map->desc_size,
 			&memory_map->desc_ver
 			);
-	if(status != EFI_SUCCESS) {
+	if(EFI_ERROR(status)) {
 		Print(L"failed to get memory map\r\nstatus = 0x");
 		Print_int((UINTN)status,16);
 		hlt();
 	}
 
 	status = gBS->ExitBootServices(image_handle, memory_map->map_key);
-	if(status != EFI_SUCCESS) {
+	if(EFI_ERROR(status)) {
 		Print(L"faield to exit bootservices\r\n");
 		hlt();
 	}
 
-	typedef void (*kernel_main_t) (FrameInfo *frame_info, UefiMemoryMap *memory_map);
+	typedef void (*kernel_main_t) (FrameInfo *frame_info, UefiMemoryMap *memory_map,
+			void* volume_image);
 	kernel_main_t kernel_main = (kernel_main_t)ehdr->e_entry;
-	kernel_main(fi, memory_map);
+	kernel_main(fi, memory_map, volume_image);
 
 	hlt();
 	return EFI_SUCCESS;

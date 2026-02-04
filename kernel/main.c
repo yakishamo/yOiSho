@@ -22,6 +22,7 @@
 
 extern FrameInfo *frame_info;
 UefiMemoryMap *u_memory_map;
+void *VOLUME_IMAGE = NULL;
 int KernelMain();
 uint16_t kernel_stack[KERNEL_STACK_SIZE/2];
 
@@ -30,9 +31,10 @@ void hlt() {
 }
 
 __attribute__((ms_abi))
-void KernelEntryPoint(FrameInfo *fi, UefiMemoryMap *memmap) {
+void KernelEntryPoint(FrameInfo *fi, UefiMemoryMap *memmap, void* volume_image) {
 	frame_info = fi;
 	u_memory_map = memmap;
+	VOLUME_IMAGE = volume_image;
 	SwitchKernelStack(kernel_stack, KERNEL_STACK_SIZE, KernelMain);
 }
 
