@@ -17,6 +17,7 @@
 #include "pic.h"
 #include "serial.h"
 #include "kprintf.h"
+#include "fat.h"
 
 #define KERNEL_STACK_SIZE 1024*1024
 
@@ -59,17 +60,23 @@ int KernelMain(){
 
   InitializeKernelHeap();
 
+	FatFileSystem fat = loadFat(VOLUME_IMAGE);
+
 	SERIAL_CONSOLE *serial_com1 = InitializeSerialConsole(1);
 
 	setKprintfSerial(serial_com1);
 
 	kprint("Hello, yOiSho!!\r\n");
-	kprint("test test\r\n");
-	kprintf("test %d test\r\n", 43);
-	kprintf("test %c test\r\n", 'X');
-	kprintf("test %s test\r\n", "hogehoge");
-	kprintf("%c%c%c%c 0x%x %s",'c','h','a','r', 0xdeadbeef, "test complete!!");
-
+	kprintf("VOLUME_IMAGE:\r\n");
+	uint8_t *v = (uint8_t*)VOLUME_IMAGE;
+	for(int i = 0; i < 16; i++) {
+		kprintf("%x: ", i*16);
+		for(int j = 0; j < 16; j++) {
+			kprintf("%x ",v[i*16+j]);
+		}
+		kprintf("\r\n");
+	}
+	printVolumeName(fat);
 	hlt();
 	return 0;
 }
