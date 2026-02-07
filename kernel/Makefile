@@ -1,7 +1,7 @@
 TARGET = kernel.elf
 OBJS = asmfunc.o main.o hankaku.o frame.o string.o keyboard.o file.o parse.o kprintf.o \
 			 memory.o segment.o paging.o interrupt/interrupt.o interrupt/message.o kmalloc.o \
-			 pic.o queue.o serial.o
+			 pic.o queue.o serial.o fat.o
 
 CC=clang
 CXXFLAGS += -O0 -Wall -g --target=x86_64-elf -ffreestanding -mno-red-zone -std=c17 \
