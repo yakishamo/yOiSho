@@ -71,7 +71,6 @@ void* getClus(FatFileSystem fat, clus_num_t clus) {
 	BPB *bpb = fat->bpb;
 	block_num_t head_blk = bpb->BPB_RsvdSecCnt + bpb->BPB_FATSz32 * bpb->BPB_NumFATs;
 	block_num_t blk = head_blk + (clus-2) * bpb->BPB_SecPerClus;
-	kprintf("offset: 0x%x\r\n", blk * bpb->BPB_BytsPerSec);
 	return (void*)(blk * bpb->BPB_BytsPerSec + (uintptr_t)bpb);
 }
 
@@ -81,6 +80,10 @@ FatFileSystem loadFat(void *data) {
 	fat->sec_per_clus = fat->bpb->BPB_SecPerClus;
 	fat->root_dir = (DirEntry*)getClus(fat, (clus_num_t)fat->bpb->BPB_RootClus);
 	return fat;
+}
+
+clus_num_t getStartClus(DirEntry *dir) {
+	return (dir->DIR_FstClusLO) | (dir->DIR_FstClusHI << 16);
 }
 
 void printVolume(FatFileSystem fat) {
@@ -106,6 +109,11 @@ void printVolume(FatFileSystem fat) {
 		memcpy(str, ent_name, 11);
 		str[11] = 0;
 		kprintf("%s\r\n", str);
+		if(strcmp((char*)str, "HOGE    TXT") == 0) {
+			clus_num_t start_clus = getStartClus(&ent[i]);
+			char *file_data = getClus(fat, start_clus);
+			kprintf("hoge.txt found:\r\n%s\r\n", file_data);
+		}
 		memset(str, 0, 20);
 		i++;
 	}

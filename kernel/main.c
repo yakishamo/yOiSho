@@ -66,8 +66,9 @@ int KernelMain(){
 
 	FatFileSystem fat = loadFat(VOLUME_IMAGE);
 
-	kprint("Hello, yOiSho!!\r\n");
+	kprintf("Hello, yOiSho!!\r\n");
 	printVolume(fat);
+	kprintf("kenrel end!!!\r\n");
 
 	hlt();
 	return 0;
