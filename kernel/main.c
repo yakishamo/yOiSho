@@ -60,23 +60,15 @@ int KernelMain(){
 
   InitializeKernelHeap();
 
-	FatFileSystem fat = loadFat(VOLUME_IMAGE);
-
 	SERIAL_CONSOLE *serial_com1 = InitializeSerialConsole(1);
 
 	setKprintfSerial(serial_com1);
 
+	FatFileSystem fat = loadFat(VOLUME_IMAGE);
+
 	kprint("Hello, yOiSho!!\r\n");
-	kprintf("VOLUME_IMAGE:\r\n");
-	uint8_t *v = (uint8_t*)VOLUME_IMAGE;
-	for(int i = 0; i < 16; i++) {
-		kprintf("%x: ", i*16);
-		for(int j = 0; j < 16; j++) {
-			kprintf("%x ",v[i*16+j]);
-		}
-		kprintf("\r\n");
-	}
-	printVolumeName(fat);
+	printVolume(fat);
+
 	hlt();
 	return 0;
 }

@@ -4,6 +4,6 @@
 typedef struct FatFileSystem_ *FatFileSystem;
 
 FatFileSystem loadFat(void* data);
-void printVolumeName(FatFileSystem fat);
+void printVolume(FatFileSystem fat);
 
 #endif /* FAT_H */
