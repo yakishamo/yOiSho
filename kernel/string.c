@@ -159,6 +159,25 @@ int vsnprintf(char *str, size_t n, const char *fmt, va_list ap) {
 				}
 				strcat(str, arg_char);
 				i += len;
+			} else if (*c == 'd' || *c == 'x' || *c == 'X') {
+				int arg_int = va_arg(ap, int);
+				char arg_int_str[64];
+				if (*c == 'd') {
+					itoa(arg_int_str, arg_int, 10);
+				} else {
+					itoa(arg_int_str, arg_int, 16);
+					if(*c == 'x') {
+						tolower(arg_int_str);
+					} else { // *c == 'X'
+						toupper(arg_int_str);
+					}
+				}
+				int len = strlen(arg_int_str);
+				if(len + i >= n) {
+					return i;
+				}
+				strcat(str, arg_int_str);
+				i += len;
 			}
 		} else {
 			str[i] = *c;
@@ -166,4 +185,5 @@ int vsnprintf(char *str, size_t n, const char *fmt, va_list ap) {
 		}
 	}
 	str[i] = 0;
+	return i;
 }
