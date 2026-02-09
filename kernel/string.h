@@ -17,5 +17,7 @@ char *strcpy(char *s1, const char *s2);
 char *strcat(char *s1, const char *s2);
 int atoi(char *str);
 void itoa(char *str, uint64_t a, unsigned int radix);
+void toupper(char str[]);
+void tolower(char str[]);
 
 #endif /* STRING_H */
