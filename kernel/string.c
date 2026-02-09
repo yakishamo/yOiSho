@@ -121,3 +121,18 @@ void itoa(char *str, uint64_t a, unsigned int radix) {
 	return;
 }
 
+void toupper(char str[]) {
+	for(char *c = str; *c != '\0'; c++) {
+		if('a' <= *c && *c <= 'z') {
+			*c = *c + ('A' - 'a');
+		}
+	}
+}
+
+void tolower(char str[]) {
+	for(char *c = str; *c != '\0'; c++) {
+		if('A' <= *c && *c <= 'Z') {
+			*c = *c + ('a' - 'A');
+		}
+	}
+}
