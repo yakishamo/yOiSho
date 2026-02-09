@@ -68,6 +68,8 @@ int KernelMain(){
 
 	kprintf("Hello, yOiSho!!\r\n");
 	printVolume(fat);
+	char *str = "sequence s test";
+	kprintf("hogehoge %s %s\r\n", str, str);
 	kprintf("kenrel end!!!\r\n");
 
 	hlt();

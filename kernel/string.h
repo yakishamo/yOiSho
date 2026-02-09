@@ -1,6 +1,8 @@
 #ifndef STRING_H
 #define STRING_H
 
+#include "stdarg.h"
+
 #include "../common/types64.h"
 #include "../common/def.h"
 
@@ -19,5 +21,7 @@ int atoi(char *str);
 void itoa(char *str, uint64_t a, unsigned int radix);
 void toupper(char str[]);
 void tolower(char str[]);
+int snprintf(char *str, size_t n, const char *fmt, ...);
+int vsnprintf(char *str, size_t n, const char *fmt, va_list ap);
 
 #endif /* STRING_H */

@@ -1,4 +1,5 @@
 #include "string.h"
+#include "stdarg.h"
 
 #include "../common/types64.h"
 #include "../common/def.h"
@@ -135,4 +136,34 @@ void tolower(char str[]) {
 			*c = *c + ('a' - 'A');
 		}
 	}
+}
+
+int snprintf(char *str, size_t n, const char *fmt, ...) {
+	va_list ap;
+	va_start(ap, fmt);
+	int ret = vsnprintf(str, n, fmt, ap);
+	va_end(ap);
+	return ret;
+}
+
+int vsnprintf(char *str, size_t n, const char *fmt, va_list ap) {
+	int i = 0;
+	for(const char *c = fmt; *c != '\0' && i < n; c++) {
+		if(*c == '%') {
+			c++;
+			if(*c == 's') {
+				char *arg_char = va_arg(ap, char*);
+				int len = strlen(arg_char);
+				if(len + i >= n) {
+					return i;
+				}
+				strcat(str, arg_char);
+				i += len;
+			}
+		} else {
+			str[i] = *c;
+			i++;
+		}
+	}
+	str[i] = 0;
 }

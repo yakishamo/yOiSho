@@ -30,9 +30,24 @@ void kprintc(char c) {
 	sendSerialConsole(KPRINTF_SERIAL, c);
 }
 
+void vkprintf(char *fmt, va_list ap) {
+	int len = strlen(fmt) + 1024;
+	char *buf = kmalloc(len);
+	vsnprintf(buf, len, fmt, ap);
+	kprint(buf);
+}
+
+// limit: output size < fmt + 1024
+void kprintf(char *fmt, ...) {
+	va_list ap;
+	va_start(ap, fmt);
+	vkprintf(fmt, ap);
+	va_end(ap);
+} 
 // support %s, %c, %d, %x
 // When kprintf find other sequence(%*),
 // it ignore * and do not output *
+/* 
 void kprintf(char *fmt, ...) {
 	va_list ap;
 
@@ -67,3 +82,4 @@ void kprintf(char *fmt, ...) {
 		}
 	}
 }
+*/
