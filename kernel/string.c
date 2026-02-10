@@ -178,6 +178,9 @@ int vsnprintf(char *str, size_t n, const char *fmt, va_list ap) {
 				}
 				strcat(str, arg_int_str);
 				i += len;
+			} else if (*c == '\0') {
+				str[i] = '\0';
+				return i;
 			}
 		} else {
 			str[i] = *c;
