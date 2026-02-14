@@ -68,6 +68,7 @@ void *kmalloc(uint64_t size) {
           }
           available_size += iter2->size;
           if(iter2->flags.bits.available == 0) {
+						available_size = 0;
             iter = iter2->next;
             break;
           } else if(available_size < size + sizeof(ChunkHead)) {

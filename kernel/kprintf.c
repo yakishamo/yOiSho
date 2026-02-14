@@ -35,6 +35,7 @@ void vkprintf(char *fmt, va_list ap) {
 	char *buf = kmalloc(len);
 	vsnprintf(buf, len, fmt, ap);
 	kprint(buf);
+	kfree(buf);
 }
 
 // limit: output size < fmt + 1024
@@ -43,43 +44,4 @@ void kprintf(char *fmt, ...) {
 	va_start(ap, fmt);
 	vkprintf(fmt, ap);
 	va_end(ap);
-} 
-// support %s, %c, %d, %x
-// When kprintf find other sequence(%*),
-// it ignore * and do not output *
-/* 
-void kprintf(char *fmt, ...) {
-	va_list ap;
-
-	va_start(ap, fmt);
-
-	for(char *c = fmt; *c != '\0'; c++) {
-		if(*c == '%') {
-			c++;
-			if(*c == 's') {
-				char* str = va_arg(ap, char*);
-				kprint(str);
-			} else if(*c == 'c') {
-				char c = va_arg(ap, int);
-				kprintc(c);
-			} else if(*c == 'd') {
-				int i = va_arg(ap, int);
-				char *str = kmalloc(64);
-				itoa(str, i, 10);
-				kprint(str);
-				kfree(str);
-			} else if(*c == 'x') {
-				int i = va_arg(ap, int);
-				char *str = kmalloc(64);
-				itoa(str, i, 16);
-				kprint(str);
-				kfree(str);
-			} else if(*c == '\0') {
-				break;
-			}
-		} else {
-			kprintc(*c);
-		}
-	}
 }
-*/
