@@ -93,5 +93,18 @@ clus_num_t getStartClus(DirEntry dir) {
 	return (dir->DIR_FstClusLO) | (dir->DIR_FstClusHI << 16);
 }
 
-void printVolume(FatFileSystem fat) {
+void printRootDir(FatFileSystem fat) {
+	DirEntry root = fat->root_dir;
+	int i = 0;
+	while(1) {
+		char name_head = root[i].DIR_Name[0];
+		if(name_head == 0x00 || name_head == 0xE5) {
+			break;
+		} else if(name_head == 0x05) {
+			i++;
+			continue;
+		}
+		kprintf("%s ", root[i].DIR_Name);
+		i++;
+	}
 }

@@ -67,14 +67,6 @@ int KernelMain(){
 	FatFileSystem fat = loadFat(VOLUME_IMAGE);
 
 	kprintf("Hello, yOiSho!!\r\n");
-	printVolume(fat);
-	char *str = "sequence s test";
-	kprintf("hogehoge %s %s\r\n", str, str);
-	kprintf("str: 0x%x dayo!\r\n", str);
-	kprintf("1 + 2 = %d\n\r", 1 + 2);
-	kprintf("frame_info: 0x%X\r\n0x%x 0x%x 0x%X %s\r\n",
-			frame_info, 0xdeadbeef, 0xcafebabe, 0xcafebabe, "\r\nwhat is cafebabe??");
-	kprintf("kenrel end!!!\r\n");
 
 	hlt();
 	return 0;
