@@ -4,6 +4,7 @@
 
 #include "string.h"
 #include "fat.h"
+#include "kprintf.h"
 
 #define DIRECTORY_MAX 4
 
@@ -16,20 +17,22 @@ struct _FILE {
 
 static FILE filesystem[DIRECTORY_MAX];
 
-static FatFileSystem FAT_FS = NULL;
+static FatFilesystem FAT_FS = NULL;
 
 void initFilesystem(void *fat_image) {
 	FAT_FS = loadFat(fat_image);
 }
 
-char *FileList() {
+void FileList() {
 	printRootDir(FAT_FS);
 }
 
 int WriteFile(FILE file, char *data) {
-	kprintf("WriteFile() is not implemented!!\n");
+	kprintf("WriteFile() is not implemented!!\n\r");
 	return 0;
 }
 
 int ReadFile(FILE file, char *buf) {
+	kprintf("ReadFile() is not implemented!!\n\r");
+	return 0;
 }

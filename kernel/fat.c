@@ -63,7 +63,7 @@ struct DirEntry_ {
 	uint32_t DIR_FileSize;
 }__attribute((packed));
 
-struct FatFileSystem_ {
+struct FatFilesystem_ {
 	BPB bpb;
 	DirEntry root_dir;
 	uint64_t sec_per_clus;
@@ -71,15 +71,15 @@ struct FatFileSystem_ {
 	clus_num_t *cluster_chain;
 };
 
-void* getClus(FatFileSystem fat, clus_num_t clus) {
+void* getClus(FatFilesystem fat, clus_num_t clus) {
 	BPB bpb = fat->bpb;
 	block_num_t head_blk = bpb->BPB_RsvdSecCnt + bpb->BPB_FATSz32 * bpb->BPB_NumFATs;
 	block_num_t blk = head_blk + (clus-2) * bpb->BPB_SecPerClus;
 	return (void*)(blk * bpb->BPB_BytsPerSec + (uintptr_t)bpb);
 }
 
-FatFileSystem loadFat(void *data) {
-	FatFileSystem fat = kmalloc(sizeof(struct FatFileSystem_));
+FatFilesystem loadFat(void *data) {
+	FatFilesystem fat = kmalloc(sizeof(struct FatFilesystem_));
 	fat->bpb = data;
 	fat->sec_per_clus = fat->bpb->BPB_SecPerClus;
 	fat->root_dir = (DirEntry)getClus(fat, (clus_num_t)fat->bpb->BPB_RootClus);
@@ -93,18 +93,21 @@ clus_num_t getStartClus(DirEntry dir) {
 	return (dir->DIR_FstClusLO) | (dir->DIR_FstClusHI << 16);
 }
 
-void printRootDir(FatFileSystem fat) {
+void printRootDir(FatFilesystem fat) {
 	DirEntry root = fat->root_dir;
 	int i = 0;
 	while(1) {
-		char name_head = root[i].DIR_Name[0];
+		uint8_t name_head = root[i].DIR_Name[0];
 		if(name_head == 0x00 || name_head == 0xE5) {
 			break;
 		} else if(name_head == 0x05) {
 			i++;
 			continue;
 		}
-		kprintf("%s ", root[i].DIR_Name);
+		char str[12];
+		strncpy(str, (char*)(root[i].DIR_Name), 11);
+		str[11] = '\0';
+		kprintf("%s\r\n", str);
 		i++;
 	}
 }

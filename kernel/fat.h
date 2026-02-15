@@ -1,9 +1,9 @@
 #ifndef FAT_H
 #define FAT_H
 
-typedef struct FatFileSystem_ *FatFileSystem;
+typedef struct FatFilesystem_ *FatFilesystem;
 
-FatFileSystem loadFat(void* data);
-void printRootDir(FatFileSystem fat);
+FatFilesystem loadFat(void* data);
+void printRootDir(FatFilesystem fat);
 
 #endif /* FAT_H */

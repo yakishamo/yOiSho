@@ -64,9 +64,9 @@ int KernelMain(){
 
 	setKprintfSerial(serial_com1);
 
-	FatFileSystem fat = loadFat(VOLUME_IMAGE);
+	initFilesystem(VOLUME_IMAGE);
 
-	kprintf("Hello, yOiSho!!\r\n");
+	FileList();
 
 	hlt();
 	return 0;

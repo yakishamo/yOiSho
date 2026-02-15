@@ -6,9 +6,9 @@
 
 typedef struct _FILE *FILE;
 
-void initFilesytem(void *fat_image);
+void initFilesystem(void *fat_image);
 void FileList();
-int WriteFile(const char name[], const char data[]);
-const char *ReadFile(const char name[]);
+int WriteFile(FILE file, char *data);
+int ReadFile(FILE file, char *data);
 
 #endif /* FILE_H */
