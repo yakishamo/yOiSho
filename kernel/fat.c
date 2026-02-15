@@ -47,7 +47,6 @@ struct BPB_ {
 	uint8_t  BS_FilSysType[8];
 }__attribute__((packed));
 
-typedef struct DirEntry_ *DirEntry;
 struct DirEntry_ {
 	uint8_t  DIR_Name[11];
 	uint8_t  DIR_Attr;
@@ -68,7 +67,7 @@ struct FatFilesystem_ {
 	DirEntry root_dir;
 	uint64_t sec_per_clus;
 	uint64_t bytes_per_clus;
-	clus_num_t *cluster_chain;
+	clus_num_t *clus_chain;
 };
 
 void* getClus(FatFilesystem fat, clus_num_t clus) {
@@ -84,13 +83,13 @@ FatFilesystem loadFat(void *data) {
 	fat->sec_per_clus = fat->bpb->BPB_SecPerClus;
 	fat->root_dir = (DirEntry)getClus(fat, (clus_num_t)fat->bpb->BPB_RootClus);
 	fat->bytes_per_clus = fat->bpb->BPB_BytsPerSec * fat->sec_per_clus;
-	fat->cluster_chain = (clus_num_t*)(((uintptr_t)fat->bpb) + 
+	fat->clus_chain = (clus_num_t*)(((uintptr_t)fat->bpb) + 
 		fat->bpb->BPB_RsvdSecCnt * fat->bpb->BPB_BytsPerSec);
 	return fat;
 }
 
-clus_num_t getStartClus(DirEntry dir) {
-	return (dir->DIR_FstClusLO) | (dir->DIR_FstClusHI << 16);
+clus_num_t getStartClus(DirEntry dir_ent) {
+	return (dir_ent->DIR_FstClusLO) | (dir_ent->DIR_FstClusHI << 16);
 }
 
 void printRootDir(FatFilesystem fat) {
@@ -110,4 +109,23 @@ void printRootDir(FatFilesystem fat) {
 		kprintf("%s\r\n", str);
 		i++;
 	}
+}
+
+// returns read file size
+size_t getFileData(FatFilesystem fat, DirEntry dir_ent, char *buf) {
+	clus_num_t clus = getStartClus(dir_ent);
+	size_t clus_size = fat->bytes_per_clus;
+	int read_size = 0;
+	int remain_size = dir_ent->DIR_FileSize;
+	while(clus < 0x0fffff80 && remain_size <= 0) {
+		if(remain_size <= clus_size) {
+			memcpy(&buf[read_size], getClus(fat, clus), remain_size);
+			read_size += remain_size;
+			break;
+		}
+		memcpy(&buf[read_size], getClus(fat, clus), clus_size);
+		clus = fat->clus_chain[clus];
+		read_size += clus_size;
+	}
+	return read_size;
 }

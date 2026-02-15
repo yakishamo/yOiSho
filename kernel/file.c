@@ -10,12 +10,9 @@
 
 struct _FILE {
 	char name[FILE_NAME_MAX_SIZE];
-	char data[FILE_DATA_MAX_SIZE];
 	int size;
-	bool available;
+	DirEntry dir_ent;
 };
-
-static FILE filesystem[DIRECTORY_MAX];
 
 static FatFilesystem FAT_FS = NULL;
 
@@ -33,6 +30,6 @@ int WriteFile(FILE file, char *data) {
 }
 
 int ReadFile(FILE file, char *buf) {
-	kprintf("ReadFile() is not implemented!!\n\r");
+	getFileData(FAT_FS, file->dir_ent, buf);
 	return 0;
 }
