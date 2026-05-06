@@ -8,7 +8,7 @@ typedef struct _FILE *FILE;
 
 void initFilesystem(void *fat_image);
 void FileList();
-int WriteFile(FILE file, char *data);
-int ReadFile(FILE file, char *data);
+int writeFile(FILE file, char *data);
+int readFile(FILE file, char *data);
 
 #endif /* FILE_H */

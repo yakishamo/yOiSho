@@ -129,3 +129,75 @@ size_t getFileData(FatFilesystem fat, DirEntry dir_ent, char *buf) {
 	}
 	return read_size;
 }
+
+const char *VALID_FAT_FILENAME_SIGN = "!#$%&'()-@^_`{}~";
+static bool isValidFilenameChar(char c) {
+	if('a' <= c && c <= 'z') return true;
+	if('A' <= c && c <= 'Z') return true;
+	if('0' <= c && c <= '9') return true;
+	for(int i = 0; VALID_FAT_FILENAME_SIGN[i] != '\0'; i++) {
+		if(c == VALID_FAT_FILENAME_SIGN[i]) return true;
+	}
+	return false;
+}
+
+// returns 0 if success
+// otherwise; long_name is incorrect
+int convertFatFilename(char *short_name, const char *long_name) {
+	memset(short_name, ' ', sizeof(char)*11);
+	short_name[11] = '\0';
+	int i = 0;
+	for(i = 0; i < 8; i++) {
+		if(long_name[i] == '\0') { // long_name ends
+			if(i == 0) { // long_name is null string
+				return 1;
+			} 
+			break;
+		}
+		if(long_name[i] == '.') { // main name ends
+			if(i == 0) { // only extention
+				return 2;
+			}
+			break;
+		}
+		if(!isValidFilenameChar(long_name[i])) { // long_name invalid char
+			return 3;
+		}
+		short_name[i] = long_name[i];
+	}
+	if(long_name[i] == '.') {
+		i++;
+		int j = 0;
+		for(j = 0; j < 3; j++) {
+			if(long_name[i+j] == '\0') {
+				break;
+			}
+			if(!isValidFilenameChar(long_name[i+j])) {
+				return 4;
+			}
+			short_name[8+j] = long_name[i+j];
+		}
+		if(long_name[i+j] != '\0') { // long_name is not 8+3
+			return 5;
+		}
+	} 
+	toupper(short_name);
+	return 0;
+}
+
+// search in root dir
+// use only short name
+DirEntry getDirEntryByName(FatFilesystem fat, char *name) {
+	DirEntry root = fat->root_dir;
+	char fatname[11];
+	convertFatFilename(fatname, name);
+	return root; // delete it
+}
+
+void fat_test() {
+	char fatname[11];
+	int err = convertFatFilename(fatname, "FILENAME.TXT");
+	kprintf("err: %d\n%s\n", err, fatname);
+	err = convertFatFilename(fatname, "longext.jpeg");
+	kprintf("err: %d\n", err);
+}

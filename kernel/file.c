@@ -24,12 +24,12 @@ void FileList() {
 	printRootDir(FAT_FS);
 }
 
-int WriteFile(FILE file, char *data) {
+int writeFile(FILE file, char *data) {
 	kprintf("WriteFile() is not implemented!!\n\r");
 	return 0;
 }
 
-int ReadFile(FILE file, char *buf) {
+int readFile(FILE file, char *buf) {
 	getFileData(FAT_FS, file->dir_ent, buf);
 	return 0;
 }

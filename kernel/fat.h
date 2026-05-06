@@ -9,5 +9,6 @@ typedef struct DirEntry_ *DirEntry;
 FatFilesystem loadFat(void* data);
 void printRootDir(FatFilesystem fat);
 size_t getFileData(FatFilesystem fat, DirEntry dir_ent, char *buf);
+void fat_test();
 
 #endif /* FAT_H */
