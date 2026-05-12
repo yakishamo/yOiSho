@@ -33,3 +33,17 @@ int readFile(FILE file, char *buf) {
 	getFileData(FAT_FS, file->dir_ent, buf);
 	return 0;
 }
+
+void file_test() {
+	DirEntry ent;
+	ent = getDirEntryByName(FAT_FS, "kernel.elf");
+	if(!ent) {
+		kprintf("kernel.elf not found\n");
+		return;
+	}
+	kprintf("kernel.elf found\n");
+	kprintf("filesize: 0x%x\n", getFileSize(ent));
+	char name[20];
+	getDirName(ent, name);
+	kprintf("filename: %s\n", name);
+}

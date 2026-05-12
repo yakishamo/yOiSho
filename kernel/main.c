@@ -68,6 +68,8 @@ int KernelMain(){
 
 	FileList();
 
+	file_test();
+
 	fat_test();
 
 	hlt();

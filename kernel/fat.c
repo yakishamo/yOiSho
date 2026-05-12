@@ -77,6 +77,10 @@ void* getClus(FatFilesystem fat, clus_num_t clus) {
 	return (void*)(blk * bpb->BPB_BytsPerSec + (uintptr_t)bpb);
 }
 
+uint32_t getFileSize(DirEntry ent) {
+	return ent->DIR_FileSize;
+}
+
 FatFilesystem loadFat(void *data) {
 	FatFilesystem fat = kmalloc(sizeof(struct FatFilesystem_));
 	fat->bpb = data;
@@ -128,6 +132,10 @@ size_t getFileData(FatFilesystem fat, DirEntry dir_ent, char *buf) {
 		read_size += clus_size;
 	}
 	return read_size;
+}
+
+void getDirName(DirEntry entry, char *name) {
+	strncpy(name, (char*)entry->DIR_Name, 11);
 }
 
 const char *VALID_FAT_FILENAME_SIGN = "!#$%&'()-@^_`{}~";
@@ -188,16 +196,27 @@ int convertFatFilename(char *short_name, const char *long_name) {
 // search in root dir
 // use only short name
 DirEntry getDirEntryByName(FatFilesystem fat, char *name) {
-	DirEntry root = fat->root_dir;
-	char fatname[11];
-	convertFatFilename(fatname, name);
-	return root; // delete it
+	DirEntry dir_ent = fat->root_dir;
+	char fatname[12];
+	int err;
+	err = convertFatFilename(fatname, name);
+	if(err != 0) {
+		return NULL;
+	}
+	int i = 0;
+	while(1) {
+		uint8_t *dir_name = dir_ent[i].DIR_Name;
+		if(dir_name[0] == 0x00 || dir_name[0] == 0xe5) {
+			return NULL;
+		}
+		if(strncmp(fatname, (char*)dir_name, 11) == 0) {
+			kprintf("getDirEntryByName: fatname: %s\n", fatname);
+			kprintf("getDirEntryByName: dir_name: %s\n", dir_name);
+			return &dir_ent[i];
+		}
+		i++;
+	}
 }
 
 void fat_test() {
-	char fatname[11];
-	int err = convertFatFilename(fatname, "FILENAME.TXT");
-	kprintf("err: %d\n%s\n", err, fatname);
-	err = convertFatFilename(fatname, "longext.jpeg");
-	kprintf("err: %d\n", err);
 }

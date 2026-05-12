@@ -10,5 +10,6 @@ void initFilesystem(void *fat_image);
 void FileList();
 int writeFile(FILE file, char *data);
 int readFile(FILE file, char *data);
+void file_test();
 
 #endif /* FILE_H */
