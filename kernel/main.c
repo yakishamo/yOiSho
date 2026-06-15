@@ -68,9 +68,15 @@ int KernelMain(){
 
 	FileList();
 
-	file_test();
-
-	fat_test();
+	char *name = "kernel.elf";
+	FILE file = openFile(name);
+	if(file) {
+		char buf[0x100];
+		readFile(file, buf, 0x100);
+		kprintf("%s: %s\n", name, buf);
+	} else {
+		kprintf("%s not found\n", name);
+	}
 
 	hlt();
 	return 0;

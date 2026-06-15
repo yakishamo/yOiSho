@@ -4,13 +4,15 @@
 
 #include "string.h"
 #include "fat.h"
+#include "kmalloc.h"
 #include "kprintf.h"
 
 #define DIRECTORY_MAX 4
 
 struct _FILE {
 	char name[FILE_NAME_MAX_SIZE];
-	int size;
+	uint32_t size;
+	void *data;
 	DirEntry dir_ent;
 };
 
@@ -25,14 +27,40 @@ void FileList() {
 }
 
 int writeFile(FILE file, char *data) {
-	kprintf("WriteFile() is not implemented!!\n\r");
+	kprintf("WriteFile() is not implemented!!\n");
 	return 0;
 }
 
-int readFile(FILE file, char *buf) {
-	getFileData(FAT_FS, file->dir_ent, buf);
+int readFile(FILE file, char *buf, uint32_t size) {
+	if(!file) {
+		kprintf("file is NULL\n");
+		return 1;
+	}
+	int read_size = size > file->size ? file->size : size;
+	memcpy(buf, file->data, size);
 	return 0;
 }
+
+FILE openFile(const char *name) {
+	DirEntry ent;
+	ent = getDirEntryByName(FAT_FS, name);
+	if(!ent) {
+		kprintf("openFile() Failed.");
+		return NULL;
+	}
+	FILE file = kmalloc(sizeof(FILE));
+	if(!file) {
+		kprintf("openFile: kmalloc failed.");
+		return NULL;
+	} 
+	strcpy(file->name, name);
+	file->size = getFileSize(ent);
+	file->data = kmalloc(file->size);
+	getFileData(FAT_FS, ent, file->data);
+	file->dir_ent = ent;
+	
+	return file;
+} 
 
 void file_test() {
 	DirEntry ent;

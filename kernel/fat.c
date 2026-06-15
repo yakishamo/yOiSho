@@ -195,7 +195,7 @@ int convertFatFilename(char *short_name, const char *long_name) {
 
 // search in root dir
 // use only short name
-DirEntry getDirEntryByName(FatFilesystem fat, char *name) {
+DirEntry getDirEntryByName(FatFilesystem fat, const char *name) {
 	DirEntry dir_ent = fat->root_dir;
 	char fatname[12];
 	int err;
@@ -210,8 +210,6 @@ DirEntry getDirEntryByName(FatFilesystem fat, char *name) {
 			return NULL;
 		}
 		if(strncmp(fatname, (char*)dir_name, 11) == 0) {
-			kprintf("getDirEntryByName: fatname: %s\n", fatname);
-			kprintf("getDirEntryByName: dir_name: %s\n", dir_name);
 			return &dir_ent[i];
 		}
 		i++;
