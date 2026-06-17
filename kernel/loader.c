@@ -3,7 +3,7 @@
 
 void loadElf(void* buf) {
 	if(memcmp(buf, ELFMAG, 4) == 0) {
-		kprintf("buf is rlf format\n");
+		kprintf("buf is elf format\n");
 	} else {
 		kprintf("buf is NOT elf format.\n");
 	}
