@@ -34,6 +34,19 @@ void *memcpy(void *buf1, void *buf2, size_t n) {
 	return buf1;
 }
 
+int memcmp(const void *s1, const void *s2, size_t n) {
+	const unsigned char *uc1, *uc2;
+	uc1 = (unsigned char*)s1;
+	uc2 = (unsigned char*)s2;
+	for(int i = 0; i < n; i++) {
+		int ret = uc1 - uc2;
+		if(ret != 0) {
+			return ret;
+		}
+	}
+	return 0;
+}
+
 int strcmp(const char *s1, const char *s2) {
 	const char *p1 = s1;
 	const char *p2 = s2;
