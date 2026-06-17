@@ -12,6 +12,5 @@ SERIAL_CONSOLE* InitializeSerialConsole(uint32_t com);
 void sendSerialConsole(SERIAL_CONSOLE *s, uint8_t data);
 uint8_t SerialReceive(SERIAL_CONSOLE *s);
 uint8_t SerialReceiveNoNull(SERIAL_CONSOLE *s);
-void SerialConsolePrint(SERIAL_CONSOLE *s, char *str);
 
 #endif /* SERIAL_H */

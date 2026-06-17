@@ -79,14 +79,10 @@ uint8_t SerialConsoleReceiveNoNull(SERIAL_CONSOLE *s) {
 	return c;
 }
 
-void SerialConsolePrint(SERIAL_CONSOLE *s, char *str) {
-	char *c = str;
+void SerialConsoleClear(SERIAL_CONSOLE *s) {
+	char *c = SERIAL_CLEAR;
 	while(*c != '\0') {
 		sendSerialConsole(s, *c);
 		c++;
 	}
-}
-
-void SerialConsoleClear(SERIAL_CONSOLE *s) {
-	SerialConsolePrint(s, SERIAL_CLEAR);
 }

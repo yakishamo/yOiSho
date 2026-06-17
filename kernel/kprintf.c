@@ -20,7 +20,11 @@ void kprint(char *str) {
 	if(KPRINTF_SERIAL == NULL) {
 		return;
 	}
-	SerialConsolePrint(KPRINTF_SERIAL, str);
+	char *c = str;
+	while(*c != '\0') {
+		sendSerialConsole(KPRINTF_SERIAL, *c);
+		c++;
+	} 
 }
 
 void kprintc(char c) {
