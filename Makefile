@@ -14,6 +14,7 @@ UNAME_S := $(shell uname -s)
 cp:
 	cp ./loader/BOOTX64.EFI $(MOUNT_POINT)/EFI/BOOT/BOOTX64.EFI
 	cp ./kernel/kernel.elf ./$(MOUNT_POINT)/kernel.elf
+	cp ./apps/*/*.elf $(MOUNT_POINT)/
 
 mount-macos:
 	@DEV=`hdiutil attach -nomount $(DISK_IMG) | head -n1 | awk '{print $$1}'` ; \

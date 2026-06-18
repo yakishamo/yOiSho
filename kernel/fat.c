@@ -77,7 +77,7 @@ void* getClus(FatFilesystem fat, clus_num_t clus) {
 	return (void*)(blk * bpb->BPB_BytsPerSec + (uintptr_t)bpb);
 }
 
-uint32_t getFileSize(DirEntry ent) {
+uint32_t getEntSize(DirEntry ent) {
 	return ent->DIR_FileSize;
 }
 

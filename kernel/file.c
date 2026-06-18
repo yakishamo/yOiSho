@@ -50,17 +50,31 @@ FILE openFile(const char *name) {
 	}
 	FILE file = kmalloc(sizeof(FILE));
 	if(!file) {
-		kprintf("openFile: kmalloc failed.");
+		kprintf("openFile: kmalloc failed(%d).", __LINE__);
 		return NULL;
 	} 
-	strcpy(file->name, name);
-	file->size = getFileSize(ent);
+	strncpy(file->name, name, FILE_NAME_MAX_SIZE);
 	file->data = kmalloc(file->size);
+	file->size = getEntSize(ent);
+	kprintf("file->size: %d\n", file->size);
+	if(!(file->data)) {
+		kprintf("openFile: kmalloc failed(%d).\n", __LINE__);
+		return NULL;
+	}
 	getFileData(FAT_FS, ent, file->data);
 	file->dir_ent = ent;
 	
+	kprintf("file->size: %d\n", file->size);
 	return file;
 } 
+
+uint32_t getFileSize(FILE file) {
+	if(file) {
+		return file->size;
+	} else {
+		return 0;
+	}
+}
 
 void file_test() {
 	DirEntry ent;
@@ -70,7 +84,7 @@ void file_test() {
 		return;
 	}
 	kprintf("kernel.elf found\n");
-	kprintf("filesize: 0x%x\n", getFileSize(ent));
+	kprintf("filesize: 0x%x\n", getEntSize(ent));
 	char name[20];
 	getDirName(ent, name);
 	kprintf("filename: %s\n", name);
