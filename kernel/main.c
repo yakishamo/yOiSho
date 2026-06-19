@@ -80,7 +80,7 @@ int KernelMain(){
 	kprintf("file: 0x%x\n", file);
 
 	readFile(file, buf, 2048);
-	
+
 	kprintf("buf: 0x%x\n", buf);
 	uint64_t *a = buf;
 	for(int i = 0; i < 50; i++) {
