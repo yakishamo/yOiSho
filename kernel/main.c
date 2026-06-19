@@ -69,7 +69,7 @@ int KernelMain(){
 
 	FileList();
 
-	char *file_name = "loop.elf";
+	char *file_name = "kernel.elf";
 	void *buf = kmalloc(2048);
 	memset(buf, 0, 2048);
 	FILE file = openFile(file_name);
@@ -82,7 +82,10 @@ int KernelMain(){
 	readFile(file, buf, 2048);
 	
 	kprintf("buf: 0x%x\n", buf);
-	kprintf("*buf: 0x%x\n", *(uint32_t*)buf);
+	uint64_t *a = buf;
+	for(int i = 0; i < 50; i++) {
+		kprintf("0x%x\n", a[i]);
+	}
 
 	loadElf(buf);
 

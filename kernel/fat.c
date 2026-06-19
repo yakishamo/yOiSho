@@ -122,7 +122,7 @@ size_t getFileData(FatFilesystem fat, DirEntry dir_ent, char *buf) {
 	size_t clus_size = fat->bytes_per_clus;
 	int read_size = 0;
 	int remain_size = dir_ent->DIR_FileSize;
-	while(clus < 0x0fffff80 && remain_size <= 0) {
+	while(clus < 0x0fffff80 && remain_size >= 0) {
 		if(remain_size <= clus_size) {
 			memcpy(&buf[read_size], getClus(fat, clus), remain_size);
 			read_size += remain_size;

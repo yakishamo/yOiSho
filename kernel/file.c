@@ -38,6 +38,7 @@ int readFile(FILE file, char *buf, uint32_t size) {
 	}
 	int read_size = size > file->size ? file->size : size;
 	kprintf("read_size: %d\n", read_size);
+	kprintf("file->data: 0x%x\n", *(uint64_t*)(file->data));
 	memcpy(buf, file->data, read_size);
 	return 0;
 }
