@@ -49,7 +49,7 @@ FILE openFile(const char *name) {
 		kprintf("openFile() Failed.");
 		return NULL;
 	}
-	FILE file = kmalloc(sizeof(FILE));
+	FILE file = kmalloc(sizeof(struct _FILE));
 	if(!file) {
 		kprintf("openFile: kmalloc failed(%d).", __LINE__);
 		return NULL;
@@ -59,8 +59,10 @@ FILE openFile(const char *name) {
 	file->size = getEntSize(ent);
 	if(!(file->data)) {
 		kprintf("openFile: kmalloc failed(%d).\n", __LINE__);
+		kprintf("alloc size: %d\n", file->size);
 		return NULL;
 	}
+	memset(file->data, 0, file->size);
 	getFileData(FAT_FS, ent, file->data);
 	file->dir_ent = ent;
 	

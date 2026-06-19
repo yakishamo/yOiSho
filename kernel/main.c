@@ -71,6 +71,7 @@ int KernelMain(){
 
 	char *file_name = "loop.elf";
 	void *buf = kmalloc(2048);
+	memset(buf, 0, 2048);
 	FILE file = openFile(file_name);
 	if(!file || !buf) {
 		hlt();
