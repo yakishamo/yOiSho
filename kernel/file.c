@@ -37,7 +37,8 @@ int readFile(FILE file, char *buf, uint32_t size) {
 		return 1;
 	}
 	int read_size = size > file->size ? file->size : size;
-	memcpy(buf, file->data, size);
+	kprintf("read_size: %d\n", read_size);
+	memcpy(buf, file->data, read_size);
 	return 0;
 }
 
@@ -56,7 +57,6 @@ FILE openFile(const char *name) {
 	strncpy(file->name, name, FILE_NAME_MAX_SIZE);
 	file->data = kmalloc(file->size);
 	file->size = getEntSize(ent);
-	kprintf("file->size: %d\n", file->size);
 	if(!(file->data)) {
 		kprintf("openFile: kmalloc failed(%d).\n", __LINE__);
 		return NULL;
@@ -64,7 +64,6 @@ FILE openFile(const char *name) {
 	getFileData(FAT_FS, ent, file->data);
 	file->dir_ent = ent;
 	
-	kprintf("file->size: %d\n", file->size);
 	return file;
 } 
 

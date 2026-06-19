@@ -80,7 +80,8 @@ int KernelMain(){
 
 	readFile(file, buf, 2048);
 	
-	kprintf("buf: 0x%x\n", *(uint32_t*)buf);
+	kprintf("buf: 0x%x\n", buf);
+	kprintf("*buf: 0x%x\n", *(uint32_t*)buf);
 
 	loadElf(buf);
 
