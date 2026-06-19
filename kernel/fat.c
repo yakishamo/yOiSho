@@ -83,6 +83,7 @@ uint32_t getEntSize(DirEntry ent) {
 
 FatFilesystem loadFat(void *data) {
 	FatFilesystem fat = kmalloc(sizeof(struct FatFilesystem_));
+	memset(fat, 0, sizeof(struct FatFilesystem_));
 	fat->bpb = data;
 	fat->sec_per_clus = fat->bpb->BPB_SecPerClus;
 	fat->root_dir = (DirEntry)getClus(fat, (clus_num_t)fat->bpb->BPB_RootClus);
