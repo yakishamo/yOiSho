@@ -35,11 +35,11 @@ void *memcpy(void *buf1, void *buf2, size_t n) {
 }
 
 int memcmp(const void *s1, const void *s2, size_t n) {
-	const unsigned char *uc1, *uc2;
-	uc1 = (unsigned char*)s1;
-	uc2 = (unsigned char*)s2;
+	const char *uc1, *uc2;
+	uc1 = (char*)s1;
+	uc2 = (char*)s2;
 	for(int i = 0; i < n; i++) {
-		int ret = uc1 - uc2;
+		int ret = uc1[i] - uc2[i];
 		if(ret != 0) {
 			return ret;
 		}
