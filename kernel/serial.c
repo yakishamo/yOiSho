@@ -55,6 +55,7 @@ SERIAL_CONSOLE* InitializeSerialConsole(uint32_t com) {
 
 	IoOut8(port + 4, 0x0f); // MCR - set normal mode, RTS/DSR set
 	SERIAL_CONSOLE *s = kmalloc(sizeof(SERIAL_CONSOLE));
+	memset(s, 0, sizeof(SERIAL_CONSOLE));
 	s->port = port;
 	return s;
 }

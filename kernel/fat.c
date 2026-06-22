@@ -77,12 +77,13 @@ void* getClus(FatFilesystem fat, clus_num_t clus) {
 	return (void*)(blk * bpb->BPB_BytsPerSec + (uintptr_t)bpb);
 }
 
-uint32_t getFileSize(DirEntry ent) {
+uint32_t getEntSize(DirEntry ent) {
 	return ent->DIR_FileSize;
 }
 
 FatFilesystem loadFat(void *data) {
 	FatFilesystem fat = kmalloc(sizeof(struct FatFilesystem_));
+	memset(fat, 0, sizeof(struct FatFilesystem_));
 	fat->bpb = data;
 	fat->sec_per_clus = fat->bpb->BPB_SecPerClus;
 	fat->root_dir = (DirEntry)getClus(fat, (clus_num_t)fat->bpb->BPB_RootClus);
@@ -121,7 +122,7 @@ size_t getFileData(FatFilesystem fat, DirEntry dir_ent, char *buf) {
 	size_t clus_size = fat->bytes_per_clus;
 	int read_size = 0;
 	int remain_size = dir_ent->DIR_FileSize;
-	while(clus < 0x0fffff80 && remain_size <= 0) {
+	while(clus < 0x0fffff80 && remain_size > 0) {
 		if(remain_size <= clus_size) {
 			memcpy(&buf[read_size], getClus(fat, clus), remain_size);
 			read_size += remain_size;

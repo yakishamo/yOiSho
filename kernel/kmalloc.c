@@ -32,7 +32,7 @@ static void InitChunk(ChunkHead *ch, ChunkHead *next, uint64_t size, uint64_t av
   ch->next = next;
   ch->size = size;
   ch->flags.bits.available = available & 1;
-  memset(&ch->chunk, 0, size);
+  // memset(&ch->chunk, 0, size);
 }
 
 void InitializeKernelHeap(){
@@ -41,9 +41,12 @@ void InitializeKernelHeap(){
     __asm__("int3");
   }
   chunk_root = (ChunkHead*)kernel_heap;
-  InitChunk(chunk_root, NULL, KERNEL_HEAP_FRAMES * 0x100 - sizeof(ChunkHead), 1);
+  InitChunk(chunk_root, NULL, KERNEL_HEAP_FRAMES * 0x1000 - sizeof(ChunkHead), 1);
 }
 
+// あんまり複雑なkmallocは後で実装
+// 空きチャンクをマージするようにしているがなんか間違ってるっぽい
+/*
 void *kmalloc(uint64_t size) {
   ChunkHead *iter = chunk_root;
   if(size%8 != 0) {
@@ -94,6 +97,29 @@ void kfree(void *ptr) {
   }
   ch->flags.bits.available = 1;
 }
+*/
+
+// kfreeしても何もせず後ろにどんどん確保していくだけのkmalloc
+void *kmalloc(uint64_t size){ 
+	ChunkHead *chunk = chunk_root;
+	while(!chunk->flags.bits.available && chunk->next != NULL) {
+		chunk = chunk->next;
+	}
+	if(chunk->size < size + sizeof(ChunkHead)) {
+		return NULL;
+	}
+	if(!chunk->flags.bits.available) {
+		return NULL;
+	}
+	ChunkHead *next = (ChunkHead*)(((uintptr_t)chunk) + sizeof(ChunkHead) + size);
+	uint64_t next_size = chunk->size - sizeof(ChunkHead) - size;
+	ChunkHead *next_next = chunk->next;
+	InitChunk(chunk, next, size, 0);
+	InitChunk(next, next_next, next_size, 1);
+	return chunk->chunk;
+}
+
+void kfree(void *ptr) {}
 
 void DumpHeap() {
   ChunkHead *iter = chunk_root;

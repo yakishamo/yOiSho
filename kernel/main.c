@@ -18,6 +18,7 @@
 #include "serial.h"
 #include "kprintf.h"
 #include "fat.h"
+#include "user/loader.h"
 
 #define KERNEL_STACK_SIZE 1024*1024
 
@@ -68,15 +69,15 @@ int KernelMain(){
 
 	FileList();
 
-	char *name = "kernel.elf";
-	FILE file = openFile(name);
-	if(file) {
-		char buf[0x100];
-		readFile(file, buf, 0x100);
-		kprintf("%s: %s\n", name, buf);
-	} else {
-		kprintf("%s not found\n", name);
+	char *file_name = "loop.elf";
+	char *buf = kmalloc(2048);
+	memset(buf, 0, 2048);
+	FILE file = openFile(file_name);
+	if(!file || !buf) {
+		hlt();
 	}
+	readFile(file, buf, 2048);
+	loadElf(buf);
 
 	hlt();
 	return 0;

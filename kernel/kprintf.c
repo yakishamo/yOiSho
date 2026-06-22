@@ -33,6 +33,7 @@ void kprintc(char c) {
 void vkprintf(char *fmt, va_list ap) {
 	int len = strlen(fmt) + 1024;
 	char *buf = kmalloc(len);
+	memset(buf, 0, len);
 	vsnprintf(buf, len, fmt, ap);
 	kprint(buf);
 	kfree(buf);

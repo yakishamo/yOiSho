@@ -13,6 +13,7 @@ void FileList();
 FILE openFile(const char *name);
 int writeFile(FILE file, char *data);
 int readFile(FILE file, char *buf, uint32_t size);
+uint32_t getFileSize(FILE file);
 void file_test();
 
 #endif /* FILE_H */
