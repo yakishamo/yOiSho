@@ -54,7 +54,6 @@ endif
 		-device nec-usb-xhci,id=xhciv \
 		-nographic \
 		-serial mon:stdio \
-		-d int
 
 init:
 	mkdir -p fs/EFI/BOOT || :
